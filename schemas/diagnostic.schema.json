@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pte100.org/schemas/diagnostic-1.json",
+  "title": "Resultado PTE-Lint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tool", "configuration", "summary", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {"name": {"const": "pte-lint"}, "version": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "configuration": {
+      "type": "object",
+      "required": ["standard", "level", "locale"],
+      "properties": {"standard": {"type": "string"}, "level": {"type": "string"}, "locale": {"type": "string"}, "digest": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["files", "errors", "warnings", "info", "suppressed"],
+      "properties": {
+        "files": {"type": "integer", "minimum": 0},
+        "errors": {"type": "integer", "minimum": 0},
+        "warnings": {"type": "integer", "minimum": 0},
+        "info": {"type": "integer", "minimum": 0},
+        "suppressed": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "diagnostics": {"type": "array", "items": {"$ref": "#/$defs/diagnostic"}}
+  },
+  "$defs": {
+    "position": {
+      "type": "object",
+      "required": ["line", "column", "offset"],
+      "properties": {
+        "line": {"type": "integer", "minimum": 1},
+        "column": {"type": "integer", "minimum": 1},
+        "offset": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "severity", "message", "file", "range", "mode", "confidence", "fingerprint"],
+      "properties": {
+        "rule": {"type": "string"},
+        "severity": {"enum": ["error", "warning", "info"]},
+        "message": {"type": "string"},
+        "file": {"type": "string"},
+        "range": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {"start": {"$ref": "#/$defs/position"}, "end": {"$ref": "#/$defs/position"}},
+          "additionalProperties": false
+        },
+        "mode": {"enum": ["automatic", "assisted", "manual"]},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "evidence": {"type": "string"},
+        "suggestion": {"type": "string"},
+        "fix": {
+          "type": "object",
+          "required": ["safety", "replacement"],
+          "properties": {"safety": {"enum": ["safe", "review"]}, "replacement": {"type": "string"}},
+          "additionalProperties": false
+        },
+        "fingerprint": {"type": "string"},
+        "documentation": {"type": "string", "format": "uri"}
+      }
+    }
+  }
+}
+

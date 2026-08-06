@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pte100.org/schemas/pte-lint-config-1.json",
+  "title": "Configuração PTE-Lint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "standard", "level", "locale"],
+  "properties": {
+    "schema": {"const": "https://pte100.org/schemas/pte-lint-config-1.json"},
+    "standard": {"type": "string", "pattern": "^PTE-100@[0-9]+\\.[0-9]+$"},
+    "level": {"enum": ["pte-estrutura", "pte-claro", "pte-ia"]},
+    "locale": {"type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"},
+    "include": {"type": "array", "items": {"type": "string"}},
+    "exclude": {"type": "array", "items": {"type": "string"}},
+    "formats": {"type": "array", "uniqueItems": true, "items": {"enum": ["markdown", "asciidoc", "html", "plaintext", "yaml", "json"]}},
+    "vocabularies": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "profiles": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "profile_definitions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "acronym_allowlist": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "term_allowlist": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "source_profiles": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "rules": {
+      "type": "object",
+      "propertyNames": {"pattern": "^(R[0-9]{3}|[A-Za-z0-9.-]+/R[0-9]{3})$"},
+      "additionalProperties": {
+        "oneOf": [
+          {"enum": ["error", "warning", "info", "off"]},
+          {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["severity"],
+            "properties": {"severity": {"enum": ["error", "warning", "info", "off"]}}
+          }
+        ]
+      }
+    },
+    "exceptions": {"type": "string"},
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {"enum": ["text", "json", "sarif"]},
+        "path": {"type": "string"},
+        "minimum_severity": {"enum": ["error", "warning", "info"]},
+        "show_confidence": {"type": "boolean"}
+      }
+    },
+    "fail_on": {"enum": ["error", "warning", "never"]},
+    "cache": {"type": "boolean"}
+  }
+}

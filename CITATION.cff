@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Se você usar o PTE-100 em pesquisa ou produto, cite esta especificação."
+title: "PTE-100: Português Técnico Essencial"
+type: software
+authors:
+  - name: "PTE-100 contributors"
+version: "0.1"
+date-released: 2026-08-06
+license: Apache-2.0
+repository-code: "https://github.com/pte-100/pte-100"
+abstract: "Padrão aberto de escrita técnica controlada em português para pessoas, tradução e agentes de IA."
+keywords:
+  - controlled-language
+  - technical-writing
+  - portuguese
+  - documentation
+  - artificial-intelligence

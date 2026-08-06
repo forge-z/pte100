@@ -1,0 +1,19 @@
+version: "0.1"
+manifest: sources.yaml
+retrieved_at: "2026-08-06T17:24:30Z"
+
+# Somente metadados de snapshot. Os arquivos HTML correspondentes ficam no
+# cache local e não são distribuídos neste repositório.
+snapshots:
+  - id: python-tutorial-ptbr
+    url: https://docs.python.org/pt-br/3/tutorial/index.html
+    sha256: c402d62790175f53a8074cdf55e59e0d01939fdc32cf3db60239fc7edf16d551
+    units: 148
+  - id: mdn-html-ptbr
+    url: https://developer.mozilla.org/pt-BR/docs/Web/HTML
+    sha256: 6e6d7c41936e13344048c1674d40822e8de5abcd1406053038b8b45fbd9f25ed
+    units: 42
+  - id: kubernetes-tools-ptbr
+    url: https://kubernetes.io/pt-br/docs/tasks/tools/
+    sha256: 7b9e152557889aa9a9ac6cc41623209dc0589538e783923354e2730fd5b76f3f
+    units: 25

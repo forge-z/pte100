@@ -1,0 +1,30 @@
+name: Validate specification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Validate structured artifacts
+        run: ruby tools/validate_repo.rb
+      - name: Regenerate corpus fixtures
+        run: ruby tools/generate_corpus.rb
+      - name: Regenerate rule catalog
+        run: ruby tools/generate_catalog.rb
+      - name: Run MVP tests
+        run: rake test
+      - name: Dogfood canonical procedure
+        run: bin/pte-lint check examples/procedure-pte.md --level pte-claro --format json > dogfood-report.json
+      - name: Check generated files
+        run: git diff --exit-code

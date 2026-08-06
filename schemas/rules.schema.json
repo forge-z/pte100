@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pte100.org/schemas/rules-1.json",
+  "title": "Pacote de regras PTE-100",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "standard", "standard_version", "locale_neutral", "rules"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "standard": {"const": "PTE-100"},
+    "standard_version": {"type": "string"},
+    "locale_neutral": {"type": "boolean"},
+    "rules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/rule"}}
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "category", "level", "status", "severity", "description", "rationale", "incorrect", "correct", "lint"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^R[0-9]{3}$"},
+        "title": {"type": "string", "minLength": 1},
+        "category": {"enum": ["lexicon", "sentence", "procedure", "alert", "data", "structure", "ai"]},
+        "level": {"enum": ["pte-estrutura", "pte-claro", "pte-ia"]},
+        "status": {"enum": ["proposal", "experimental", "active", "deprecated", "retired"]},
+        "severity": {"enum": ["error", "warning", "info", "off"]},
+        "description": {"type": "string", "minLength": 10},
+        "rationale": {"type": "string", "minLength": 10},
+        "incorrect": {"type": "string", "minLength": 1},
+        "correct": {"type": "string", "minLength": 1},
+        "lint": {"$ref": "#/$defs/lint"}
+      }
+    },
+    "lint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "engine", "selector", "condition", "parameters", "autofix", "message"],
+      "properties": {
+        "mode": {"enum": ["automatic", "assisted", "manual"]},
+        "engine": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "selector": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "condition": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "parameters": {"type": "object"},
+        "autofix": {"enum": ["none", "suggested", "safe"]},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
+

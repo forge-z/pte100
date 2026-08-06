@@ -1,0 +1,202 @@
+schema_version: "1.0"
+id: pte-core
+version: "0.1.0"
+title: Vocabulário nuclear PTE-100
+locales: [pt-BR]
+status: experimental
+concepts:
+  - id: PTE-C0001
+    preferred: verificar
+    part_of_speech: verb
+    definition: "Examinar uma condição e comparar o resultado com um critério explícito."
+    admitted: []
+    forbidden:
+      - {term: checar, replacement: verificar, reason: "anglicismo evitável no perfil pt-BR"}
+      - {term: cheque, replacement: verifique, reason: "forma flexionada do termo não preferido"}
+      - {term: checagem, replacement: verificação, reason: "nominalização não preferida neste conceito"}
+    example: "Verifique se a tensão é 0 V."
+
+  - id: PTE-C0002
+    preferred: remover
+    part_of_speech: verb
+    definition: "Separar um objeto de sua posição instalada."
+    admitted: []
+    forbidden:
+      - {term: retirar, replacement: remover, reason: "sinônimo não preferido neste sentido"}
+    example: "Remova a tampa."
+
+  - id: PTE-C0003
+    preferred: instalar
+    part_of_speech: verb
+    definition: "Colocar e fixar um componente na posição de operação."
+    admitted: []
+    forbidden:
+      - {term: colocar, replacement: instalar, reason: "verbo genérico"}
+    example: "Instale o filtro no alojamento."
+
+  - id: PTE-C0004
+    preferred: conectar
+    part_of_speech: verb
+    definition: "Unir interfaces para permitir passagem de sinal, energia ou fluido."
+    admitted: []
+    forbidden:
+      - {term: ligar, replacement: conectar, reason: "pode significar energizar"}
+    example: "Conecte o cabo ao terminal X1."
+
+  - id: PTE-C0005
+    preferred: desconectar
+    part_of_speech: verb
+    definition: "Separar interfaces antes conectadas."
+    admitted: []
+    forbidden:
+      - {term: desligar, replacement: desconectar, reason: "pode significar desenergizar"}
+    example: "Desconecte o cabo do terminal X1."
+
+  - id: PTE-C0006
+    preferred: ligar
+    part_of_speech: verb
+    definition: "Mudar um equipamento ou função para o estado ativo."
+    admitted: [ativar]
+    forbidden: []
+    example: "Ligue a bomba."
+
+  - id: PTE-C0007
+    preferred: desligar
+    part_of_speech: verb
+    definition: "Mudar um equipamento ou função para o estado inativo."
+    admitted: [desativar]
+    forbidden: []
+    example: "Desligue a bomba."
+
+  - id: PTE-C0008
+    preferred: pressionar
+    part_of_speech: verb
+    definition: "Aplicar força momentânea a botão, tecla ou superfície."
+    admitted: []
+    forbidden:
+      - term: apertar
+        replacement: pressionar
+        reason: "reservar 'apertar' para aplicar torque ou compressão"
+        allowed_contexts:
+          - id: torque-or-compression
+            patterns: ["N·m", "torque", "parafuso", "porca", "compress"]
+      - term: aperte
+        replacement: pressione
+        reason: "forma flexionada de 'apertar' para botão, tecla ou superfície"
+        allowed_contexts:
+          - id: torque-or-compression
+            patterns: ["N·m", "torque", "parafuso", "porca", "compress"]
+      - term: aperta
+        replacement: pressiona
+        reason: "forma flexionada de 'apertar' para botão, tecla ou superfície"
+        allowed_contexts:
+          - id: torque-or-compression
+            patterns: ["N·m", "torque", "parafuso", "porca", "compress"]
+    example: "Pressione o botão REINICIAR."
+
+  - id: PTE-C0009
+    preferred: selecionar
+    part_of_speech: verb
+    definition: "Escolher uma opção em interface ou conjunto definido."
+    admitted: []
+    forbidden:
+      - {term: escolher, replacement: selecionar, reason: "termo preferido para interface"}
+    example: "Selecione **Configurações**."
+
+  - id: PTE-C0010
+    preferred: registrar
+    part_of_speech: verb
+    definition: "Gravar uma informação em meio persistente ou registro definido."
+    admitted: []
+    forbidden:
+      - {term: anotar, replacement: registrar, reason: "não identifica persistência ou registro"}
+    example: "Registre o número de série no formulário F-12."
+
+  - id: PTE-C0011
+    preferred: substituir
+    part_of_speech: verb
+    definition: "Remover um item e instalar outro que assume a mesma função."
+    admitted: []
+    forbidden:
+      - {term: trocar, replacement: substituir, reason: "pode sugerir permuta entre posições"}
+    example: "Substitua o fusível F2."
+
+  - id: PTE-C0012
+    preferred: confirmar
+    part_of_speech: verb
+    definition: "Obter evidência de que um estado esperado foi alcançado."
+    admitted: []
+    forbidden:
+      - {term: certificar-se, replacement: confirmar, reason: "forma reflexiva mais complexa"}
+    example: "Confirme que o indicador está verde."
+
+  - id: PTE-C0013
+    preferred: aproximadamente
+    part_of_speech: adverb
+    definition: "Indicar valor informativo não usado como limite de aceitação."
+    admitted: []
+    forbidden:
+      - {term: cerca de, replacement: aproximadamente, reason: "forma preferida no núcleo"}
+    example: "O teste dura aproximadamente 10 minutos."
+
+  - id: PTE-C0014
+    preferred: no máximo
+    part_of_speech: adverbial_phrase
+    definition: "Indicar limite superior inclusivo."
+    admitted: []
+    forbidden:
+      - {term: até, replacement: no máximo, reason: "'até' pode ter sentido temporal ou espacial"}
+    example: "Aguarde no máximo 30 segundos."
+
+  - id: PTE-C0015
+    preferred: no mínimo
+    part_of_speech: adverbial_phrase
+    definition: "Indicar limite inferior inclusivo."
+    admitted: []
+    forbidden: []
+    example: "Mantenha a pressão por no mínimo 5 segundos."
+
+  - id: PTE-C0016
+    preferred: falha
+    part_of_speech: noun
+    definition: "Perda da capacidade de executar uma função requerida."
+    admitted: []
+    forbidden:
+      - {term: problema, replacement: falha, reason: "termo genérico quando a função foi perdida"}
+    example: "Registre o código da falha."
+
+  - id: PTE-C0017
+    preferred: dano
+    part_of_speech: noun
+    definition: "Alteração física ou lógica que reduz valor, integridade ou função."
+    admitted: []
+    forbidden:
+      - {term: avaria, replacement: dano, reason: "forma preferida no perfil nuclear pt-BR"}
+    example: "Verifique se o cabo tem dano visível."
+
+  - id: PTE-C0018
+    preferred: reiniciar
+    part_of_speech: verb
+    definition: "Parar e iniciar novamente um processo, serviço ou equipamento."
+    admitted: []
+    forbidden:
+      - {term: resetar, replacement: reiniciar, reason: "anglicismo e possível confusão com redefinir"}
+    example: "Reinicie o serviço de impressão."
+
+  - id: PTE-C0019
+    preferred: redefinir
+    part_of_speech: verb
+    definition: "Restaurar uma configuração para um valor definido."
+    admitted: []
+    forbidden:
+      - {term: resetar, replacement: redefinir, reason: "anglicismo e possível confusão com reiniciar"}
+    example: "Redefina a senha do operador."
+
+  - id: PTE-C0020
+    preferred: atualização
+    part_of_speech: noun
+    definition: "Mudança controlada de software, firmware, dados ou documento para uma revisão mais recente."
+    admitted: []
+    forbidden:
+      - {term: update, replacement: atualização, reason: "termo estrangeiro não necessário"}
+    example: "Instale a atualização do controlador."

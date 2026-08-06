@@ -1,0 +1,604 @@
+schema_version: "1.0"
+standard: PTE-100
+standard_version: "0.1"
+locale_neutral: true
+rules:
+  - id: R001
+    title: Use um termo preferido por conceito
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Use o termo preferido do vocabulário ativo sempre que o conceito correspondente aparecer."
+    rationale: "Uma forma estável reduz ambiguidade, variação de tradução e dispersão na busca."
+    incorrect: "Faça a checagem da bateria. Depois, cheque a bateria."
+    correct: "Verifique a bateria. Depois, registre o estado da bateria."
+    lint: {mode: automatic, engine: terminology, selector: prose, condition: forbidden_or_nonpreferred_term, parameters: {respect_literal_spans: true}, autofix: suggested, message: "Use '{preferred}' no lugar de '{term}' para o conceito {concept_id}."}
+
+  - id: R002
+    title: Use uma palavra com um só sentido no mesmo escopo
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Não use a mesma palavra para conceitos diferentes dentro de uma unidade de conteúdo."
+    rationale: "A polissemia local faz leitores e sistemas associarem uma ação ao objeto errado."
+    incorrect: "Abra a porta e abra a válvula com a chave."
+    correct: "Abra a porta e destrave a válvula com a chave."
+    lint: {mode: assisted, engine: word_sense, selector: content_unit, condition: same_lemma_multiple_concepts, parameters: {confidence: 0.8}, autofix: none, message: "O termo '{term}' pode ter mais de um sentido nesta unidade."}
+
+  - id: R003
+    title: Evite sinônimos não registrados
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Não alterne entre sinônimos para variar o estilo; registre uma variante antes de usá-la."
+    rationale: "Variação ornamental prejudica correspondência terminológica e memória de tradução."
+    incorrect: "Remova a tampa. Retire a cobertura lateral."
+    correct: "Remova a tampa. Remova a tampa lateral."
+    lint: {mode: assisted, engine: terminology, selector: document, condition: unregistered_synonym_cluster, parameters: {confidence: 0.85}, autofix: suggested, message: "Os termos {terms} parecem nomear o mesmo conceito; use o termo preferido."}
+
+  - id: R004
+    title: Expanda a sigla na primeira ocorrência
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Escreva o nome completo seguido da sigla entre parênteses na primeira ocorrência de cada unidade autônoma."
+    rationale: "A expansão torna a unidade compreensível fora do documento de origem."
+    incorrect: "Conecte o CLP à rede."
+    correct: "Conecte o controlador lógico programável (CLP) à rede."
+    lint: {mode: automatic, engine: abbreviation, selector: content_unit, condition: acronym_before_definition, parameters: {allowlist: []}, autofix: suggested, message: "Expanda a sigla '{term}' na primeira ocorrência desta unidade."}
+
+  - id: R005
+    title: Não abrevie por economia de espaço
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Use abreviação somente quando ela estiver registrada, for necessária e ocorrer novamente."
+    rationale: "Abreviações ocasionais aumentam o esforço de leitura e podem coincidir com outros códigos."
+    incorrect: "Verifique a temp. amb."
+    correct: "Verifique a temperatura ambiente."
+    lint: {mode: automatic, engine: abbreviation, selector: prose, condition: unregistered_abbreviation, parameters: {ignore_patterns: [url, version, unit]}, autofix: suggested, message: "A abreviação '{term}' não está registrada."}
+
+  - id: R006
+    title: Use verbo específico em vez de expressão nominal
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Substitua construções como 'efetuar a verificação' pelo verbo que nomeia a ação."
+    rationale: "Verbos diretos encurtam a frase e tornam a ação detectável."
+    incorrect: "Efetue a realização do teste."
+    correct: "Teste o circuito."
+    lint: {mode: automatic, engine: phrase_map, selector: prose, condition: nominalization_in_registry, parameters: {registry: pte-core}, autofix: suggested, message: "Prefira o verbo direto '{replacement}'."}
+
+  - id: R007
+    title: Evite verbos genéricos sem complemento preciso
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Não use 'fazer', 'realizar', 'colocar' ou 'processar' quando um verbo técnico mais preciso estiver disponível."
+    rationale: "Verbos genéricos escondem o tipo de transformação ou movimento."
+    incorrect: "Faça o cabo no terminal."
+    correct: "Conecte o cabo ao terminal X1."
+    lint: {mode: assisted, engine: generic_verb, selector: prose, condition: generic_verb_low_specificity, parameters: {verbs: [fazer, realizar, colocar, processar]}, autofix: none, message: "O verbo '{term}' pode ser impreciso; nomeie a ação técnica."}
+
+  - id: R008
+    title: Use nomes técnicos explícitos
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Nomeie o componente, o material ou o dado; não o substitua por expressão vaga."
+    rationale: "Expressões vagas dependem de contexto que pode desaparecer na tradução ou recuperação."
+    incorrect: "Remova a coisa que prende o tubo."
+    correct: "Remova a abraçadeira do tubo."
+    lint: {mode: assisted, engine: vague_language, selector: prose, condition: vague_noun_phrase, parameters: {terms: [coisa, negócio, elemento, parte]}, autofix: none, message: "A expressão '{term}' não identifica um objeto técnico preciso."}
+
+  - id: R009
+    title: Marque palavras estrangeiras e literais
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Marque comando, rótulo de interface, código e termo estrangeiro que precise permanecer literal."
+    rationale: "A marcação impede tradução ou correção indevida e separa linguagem de conteúdo executável."
+    incorrect: "Clique em Save as."
+    correct: "Selecione **Save as** (Salvar como)."
+    lint: {mode: assisted, engine: language_id, selector: prose, condition: unmarked_foreign_or_literal_span, parameters: {min_length: 2}, autofix: suggested, message: "Marque '{term}' como literal ou forneça equivalente em português."}
+
+  - id: R010
+    title: Evite referência pronominal ambígua
+    category: lexicon
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Repita o nome técnico quando um pronome ou demonstrativo puder ter mais de um antecedente."
+    rationale: "Antecedente explícito impede que uma ação seja aplicada ao componente errado."
+    incorrect: "Remova o módulo da base e limpe-a."
+    correct: "Remova o módulo da base e limpe a base."
+    lint: {mode: assisted, engine: coreference, selector: sentence_pair, condition: ambiguous_pronoun_antecedent, parameters: {max_candidates: 1, confidence: 0.75}, autofix: none, message: "O referente de '{term}' pode ser ambíguo."}
+
+  - id: R011
+    title: Expresse uma ação principal por frase
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Em instruções, escreva uma ação principal por frase, exceto ações inseparáveis registradas."
+    rationale: "Ações separadas permitem confirmar ordem, resultado e falha de cada etapa."
+    incorrect: "Abra a tampa, retire o filtro e limpe o alojamento."
+    correct: "Abra a tampa. Remova o filtro. Limpe o alojamento."
+    lint: {mode: assisted, engine: dependency_parse, selector: instruction_sentence, condition: multiple_independent_actions, parameters: {allowed_pairs: []}, autofix: suggested, message: "A frase contém {count} ações principais; divida a instrução."}
+
+  - id: R012
+    title: Limite a frase a 25 palavras
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Use no máximo 25 palavras por frase, salvo literal indivisível ou exceção de segurança justificada."
+    rationale: "Frases curtas reduzem carga de memória e erro de segmentação."
+    incorrect: "Antes de iniciar a operação, que somente deve ser feita por pessoal autorizado, verifique se todos os cabos que foram instalados durante a etapa anterior estão firmes e sem danos visíveis."
+    correct: "Somente pessoal autorizado pode iniciar a operação. Antes da operação, verifique todos os cabos instalados. Confirme que os cabos estão firmes e sem danos visíveis."
+    lint: {mode: automatic, engine: word_count, selector: sentence, condition: word_count_exceeds, parameters: {maximum: 25, exclude: [code, url, identifier]}, autofix: none, message: "A frase tem {actual} palavras; o limite é {maximum}."}
+
+  - id: R013
+    title: Prefira voz ativa
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Identifique o agente e use voz ativa quando o agente for relevante para a ação."
+    rationale: "A voz ativa mostra responsabilidade e reduz omissão do agente."
+    incorrect: "O relatório deve ser aprovado antes do envio."
+    correct: "O supervisor deve aprovar o relatório antes do envio."
+    lint: {mode: assisted, engine: morphosyntax, selector: prose, condition: passive_voice_with_missing_agent, parameters: {confidence: 0.8}, autofix: none, message: "Identifique o agente desta ação ou justifique a voz passiva."}
+
+  - id: R014
+    title: Coloque a condição antes da ação
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Quando uma condição determinar a execução, escreva a condição antes da ação."
+    rationale: "O leitor precisa decidir a aplicabilidade antes de começar uma ação."
+    incorrect: "Substitua o fusível se o indicador permanecer apagado."
+    correct: "Se o indicador permanecer apagado, substitua o fusível."
+    lint: {mode: automatic, engine: syntax_pattern, selector: instruction_sentence, condition: trailing_execution_condition, parameters: {markers: [se, caso]}, autofix: suggested, message: "Mova a condição de execução para antes da ação."}
+
+  - id: R015
+    title: Diferencie se, quando e enquanto
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Use 'se' para possibilidade, 'quando' para evento esperado e 'enquanto' para simultaneidade."
+    rationale: "Conectores condicionais diferentes codificam estados operacionais diferentes."
+    incorrect: "Quando ocorrer uma falha eventual, registre o código."
+    correct: "Se ocorrer uma falha, registre o código."
+    lint: {mode: assisted, engine: semantic_marker, selector: sentence, condition: condition_marker_semantic_mismatch, parameters: {markers: [se, quando, enquanto]}, autofix: suggested, message: "Verifique se '{term}' expressa a relação temporal ou condicional correta."}
+
+  - id: R016
+    title: Explicite o escopo da negação
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Posicione 'não' junto do verbo afetado e reescreva negativas que admitam mais de um escopo."
+    rationale: "Negação ambígua pode inverter uma condição ou proibição."
+    incorrect: "Não desligue e remova o cabo."
+    correct: "Mantenha o equipamento ligado. Remova o cabo de dados."
+    lint: {mode: assisted, engine: dependency_parse, selector: sentence, condition: negation_with_coordinated_predicates, parameters: {confidence: 0.75}, autofix: none, message: "A negação pode afetar mais de uma ação; explicite seu escopo."}
+
+  - id: R017
+    title: Evite dupla negação
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Não combine duas formas negativas quando uma formulação positiva preservar o sentido."
+    rationale: "Dupla negação aumenta esforço e pode ser interpretada como proibição."
+    incorrect: "Não use um cabo que não esteja intacto."
+    correct: "Use somente um cabo intacto."
+    lint: {mode: automatic, engine: negation_count, selector: sentence, condition: multiple_negative_markers, parameters: {minimum: 2}, autofix: suggested, message: "Reescreva a dupla negação como uma instrução direta."}
+
+  - id: R018
+    title: Use modalidade normativa padronizada
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Use 'deve', 'não deve', 'deveria' e 'pode' conforme obrigação, proibição, recomendação e permissão."
+    rationale: "Um conjunto fechado torna a força da instrução verificável."
+    incorrect: "Convém que o técnico talvez registre a leitura."
+    correct: "O técnico deve registrar a leitura."
+    lint: {mode: automatic, engine: phrase_map, selector: normative_prose, condition: nonstandard_modality, parameters: {allowed: [deve, não deve, deveria, pode]}, autofix: suggested, message: "Use uma modalidade normativa padronizada; '{term}' é impreciso."}
+
+  - id: R019
+    title: Evite futuro para expressar obrigação
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Não use futuro do presente ou futuro perifrástico para criar requisito."
+    rationale: "O futuro descreve previsão e não distingue obrigação de resultado esperado."
+    incorrect: "O operador registrará o número de série."
+    correct: "O operador deve registrar o número de série."
+    lint: {mode: assisted, engine: morphosyntax, selector: normative_prose, condition: future_tense_as_requirement, parameters: {confidence: 0.8}, autofix: suggested, message: "Use 'deve' se a frase expressar obrigação."}
+
+  - id: R020
+    title: Evite gerúndio com relação lógica indefinida
+    category: sentence
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Substitua gerúndio quando ele não deixar claro se a ação é simultânea, posterior, causal ou resultante."
+    rationale: "A relação implícita entre ações pode alterar a sequência operacional."
+    incorrect: "Feche a válvula, interrompendo o fluxo."
+    correct: "Feche a válvula. Confirme que o fluxo parou."
+    lint: {mode: assisted, engine: morphosyntax, selector: sentence, condition: ambiguous_gerund_clause, parameters: {confidence: 0.7}, autofix: none, message: "Explique a relação entre a oração no gerúndio e a ação principal."}
+
+  - id: R021
+    title: Inicie cada passo com uma ação
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Comece o passo com verbo no imperativo ou com condição seguida imediatamente da ação."
+    rationale: "O padrão facilita leitura por varredura e extração da ação."
+    incorrect: "A remoção da tampa deve ser feita."
+    correct: "Remova a tampa."
+    lint: {mode: automatic, engine: step_grammar, selector: procedure_step, condition: missing_leading_action, parameters: {allow_leading_condition: true}, autofix: suggested, message: "Inicie o passo com uma ação no imperativo."}
+
+  - id: R022
+    title: Identifique o objeto da ação
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Declare o objeto direto ou o alvo técnico de cada ação, salvo quando o verbo não exigir alvo."
+    rationale: "Uma ação sem alvo pode ser aplicada ao componente incorreto."
+    incorrect: "Instale com cuidado."
+    correct: "Instale o anel de vedação no alojamento."
+    lint: {mode: assisted, engine: dependency_parse, selector: procedure_step, condition: transitive_action_without_object, parameters: {confidence: 0.8}, autofix: none, message: "Identifique o objeto ou alvo do verbo '{verb}'."}
+
+  - id: R023
+    title: Preserve a ordem de execução
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Apresente passos na ordem de execução e numere-os quando a sequência for obrigatória."
+    rationale: "Ordem textual diferente da ordem real aumenta omissões e retornos perigosos."
+    incorrect: "Depois de instalar o filtro, antes disso limpe o alojamento."
+    correct: "1. Limpe o alojamento. 2. Instale o filtro."
+    lint: {mode: assisted, engine: temporal_consistency, selector: procedure, condition: temporal_marker_conflicts_with_order, parameters: {require_numbering: true}, autofix: none, message: "A relação temporal não corresponde à ordem dos passos."}
+
+  - id: R024
+    title: Separe ações simultâneas das sequenciais
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Declare explicitamente quando duas ações devem ocorrer ao mesmo tempo; caso contrário, use passos separados."
+    rationale: "Coordenação simples não informa se as ações são simultâneas ou sequenciais."
+    incorrect: "Pressione o botão e gire a chave."
+    correct: "Enquanto mantém o botão pressionado, gire a chave para LIGADO."
+    lint: {mode: assisted, engine: action_relation, selector: procedure_step, condition: coordinated_actions_without_relation, parameters: {confidence: 0.75}, autofix: none, message: "Informe se as ações são simultâneas ou sequenciais."}
+
+  - id: R025
+    title: Declare pré-requisitos antes do procedimento
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Liste estado inicial, permissão, ferramenta e material necessários antes do primeiro passo."
+    rationale: "Pré-requisitos tardios causam interrupção, improviso e execução em estado inseguro."
+    incorrect: "3. Use a chave especial, que deve ser obtida antes do serviço."
+    correct: "Pré-requisito: obtenha a chave T-40 antes de iniciar o procedimento."
+    lint: {mode: assisted, engine: document_structure, selector: procedure, condition: prerequisite_introduced_after_first_step, parameters: {}, autofix: none, message: "Mova o pré-requisito para antes do primeiro passo."}
+
+  - id: R026
+    title: Informe o resultado verificável
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Depois de ação cujo sucesso não seja visível, informe o estado ou a medição esperada."
+    rationale: "Resultado observável permite detectar execução incompleta."
+    incorrect: "Reinicie o serviço."
+    correct: "Reinicie o serviço. Confirme que o estado muda para **Ativo** em até 30 segundos."
+    lint: {mode: assisted, engine: procedure_semantics, selector: procedure_step, condition: unverifiable_action_without_expected_result, parameters: {action_registry: pte-core}, autofix: none, message: "Inclua um resultado observável para confirmar a ação."}
+
+  - id: R027
+    title: Forneça limites e tolerâncias
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Substitua qualificadores subjetivos por valor, faixa ou critério observável quando a execução depender deles."
+    rationale: "Termos como 'bem apertado' produzem resultados diferentes entre operadores."
+    incorrect: "Aperte bem o parafuso."
+    correct: "Aperte o parafuso a 12 N·m ± 1 N·m."
+    lint: {mode: assisted, engine: vague_measure, selector: procedure_step, condition: subjective_threshold, parameters: {terms: [bem, pouco, bastante, adequado, suficiente]}, autofix: none, message: "Substitua '{term}' por limite ou critério verificável."}
+
+  - id: R028
+    title: Declare a decisão com ramos explícitos
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Em uma decisão, escreva cada condição e seu destino; não esconda alternativas em prosa."
+    rationale: "Ramos explícitos evitam que o leitor continue pelo caminho errado."
+    incorrect: "Se estiver verde continue, do contrário veja o problema ou reinicie."
+    correct: "Se o indicador estiver verde, vá para o passo 6. Se estiver vermelho, execute PROC-ERR-04."
+    lint: {mode: assisted, engine: decision_graph, selector: procedure, condition: decision_branch_without_unique_target, parameters: {}, autofix: none, message: "Associe cada condição a um destino único."}
+
+  - id: R029
+    title: Use referência estável para outra instrução
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: error
+    description: "Ao encaminhar o leitor, cite o identificador e o título da unidade de destino."
+    rationale: "Expressões posicionais quebram com paginação, reuso e atualização."
+    incorrect: "Faça o procedimento abaixo."
+    correct: "Execute PROC-014 — Testar a válvula de alívio."
+    lint: {mode: automatic, engine: reference, selector: prose, condition: positional_or_unresolved_procedure_reference, parameters: {require_id_and_title: true}, autofix: suggested, message: "Substitua a referência posicional por ID e título estáveis."}
+
+  - id: R030
+    title: Não misture explicação com comando
+    category: procedure
+    level: pte-claro
+    status: experimental
+    severity: warning
+    description: "Mantenha o passo como comando e coloque explicação necessária em frase ou nota separada."
+    rationale: "Separação preserva a ação durante varredura, tradução e extração."
+    incorrect: "Remova o filtro, que normalmente acumula partículas porque fica antes da bomba."
+    correct: "Remova o filtro. NOTA: O filtro retém partículas antes da bomba."
+    lint: {mode: assisted, engine: clause_role, selector: procedure_step, condition: explanatory_relative_clause_in_command, parameters: {confidence: 0.75}, autofix: suggested, message: "Separe a explicação do comando principal."}
+
+  - id: R031
+    title: Use palavra-sinal registrada
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Inicie cada alerta com PERIGO, ADVERTÊNCIA, CUIDADO ou AVISO, salvo perfil regulado declarado."
+    rationale: "Taxonomia fechada permite reconhecer e priorizar risco."
+    incorrect: "IMPORTANTE: Há alta tensão."
+    correct: "ADVERTÊNCIA — Tensão elétrica"
+    lint: {mode: automatic, engine: alert_structure, selector: alert, condition: invalid_signal_word, parameters: {allowed: [PERIGO, ADVERTÊNCIA, CUIDADO, AVISO]}, autofix: none, message: "Use uma palavra-sinal registrada e confirme a classificação do risco."}
+
+  - id: R032
+    title: Nomeie o risco
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Identifique a fonte ou a natureza do risco no título ou na primeira frase do alerta."
+    rationale: "A palavra-sinal sozinha não informa o que deve ser evitado."
+    incorrect: "CUIDADO: Tenha atenção."
+    correct: "CUIDADO — Superfície quente"
+    lint: {mode: assisted, engine: alert_structure, selector: alert, condition: missing_hazard, parameters: {confidence: 0.8}, autofix: none, message: "Identifique o risco neste alerta."}
+
+  - id: R033
+    title: Declare a consequência
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Explique a lesão, o dano, a perda ou a interrupção que pode ocorrer."
+    rationale: "A consequência sustenta a urgência e ajuda a avaliar o comportamento seguro."
+    incorrect: "ADVERTÊNCIA: Não toque nos terminais."
+    correct: "ADVERTÊNCIA: O contato com os terminais pode causar lesão grave."
+    lint: {mode: assisted, engine: alert_structure, selector: alert, condition: missing_consequence, parameters: {confidence: 0.8}, autofix: none, message: "Declare a consequência possível do risco."}
+
+  - id: R034
+    title: Declare como evitar o risco
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Forneça uma ação preventiva específica e executável."
+    rationale: "Reconhecer o risco sem saber como evitá-lo não protege o leitor."
+    incorrect: "ADVERTÊNCIA: Há risco de choque elétrico."
+    correct: "ADVERTÊNCIA: Desligue o disjuntor Q3 e confirme tensão de 0 V antes de tocar nos terminais."
+    lint: {mode: assisted, engine: alert_structure, selector: alert, condition: missing_avoidance_action, parameters: {confidence: 0.8}, autofix: none, message: "Inclua uma ação específica para evitar o risco."}
+
+  - id: R035
+    title: Coloque o alerta antes da ação perigosa
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Posicione o alerta específico imediatamente antes do primeiro passo ao qual ele se aplica."
+    rationale: "Um alerta posterior chega tarde demais; um alerta distante pode ser ignorado."
+    incorrect: "1. Remova a tampa. ADVERTÊNCIA: A tampa protege terminais energizados."
+    correct: "ADVERTÊNCIA: Desligue o disjuntor Q3. 1. Remova a tampa."
+    lint: {mode: assisted, engine: document_structure, selector: procedure, condition: alert_after_or_detached_from_hazardous_step, parameters: {maximum_gap_blocks: 0}, autofix: suggested, message: "Posicione o alerta imediatamente antes da ação perigosa."}
+
+  - id: R036
+    title: Não use nota para comunicar risco
+    category: alert
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Use alerta, e não NOTA ou dica, quando houver lesão, dano, perda de dados ou interrupção relevante."
+    rationale: "Notas têm prioridade visual e semântica menor e podem ser omitidas no reuso."
+    incorrect: "NOTA: O eixo pode prender sua mão."
+    correct: "ADVERTÊNCIA — Movimento do eixo: Afaste as mãos antes de ligar o motor."
+    lint: {mode: assisted, engine: hazard_language, selector: note, condition: hazard_in_nonalert_block, parameters: {confidence: 0.85}, autofix: none, message: "Este conteúdo pode descrever risco; converta-o em alerta e classifique-o."}
+
+  - id: R037
+    title: Use unidade do SI ou unidade declarada pelo domínio
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Expresse medidas em unidades do SI, salvo unidade setorial registrada e declarada."
+    rationale: "Unidades previsíveis reduzem conversões e erros de escala."
+    incorrect: "Mantenha distância de 10 inches."
+    correct: "Mantenha distância de 250 mm."
+    lint: {mode: automatic, engine: units, selector: prose_and_tables, condition: unregistered_or_nonprofile_unit, parameters: {system: SI}, autofix: none, message: "A unidade '{unit}' não pertence ao perfil ativo."}
+
+  - id: R038
+    title: Separe número e símbolo de unidade
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Use um espaço inquebrável entre o número e o símbolo da unidade, exceto para grau angular, minuto e segundo de arco."
+    rationale: "A separação segue convenção metrológica e evita quebra entre valor e unidade."
+    incorrect: "Ajuste para 24V e 30°C."
+    correct: "Ajuste para 24 V e 30 °C."
+    lint: {mode: automatic, engine: units, selector: prose_and_tables, condition: missing_nbsp_between_value_and_unit, parameters: {exceptions: [degree_angle, arcminute, arcsecond]}, autofix: safe, message: "Insira espaço inquebrável entre {value} e {unit}."}
+
+  - id: R039
+    title: Use símbolo de unidade invariável
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Não pluralize símbolos, não acrescente ponto e preserve maiúsculas e minúsculas padronizadas."
+    rationale: "A forma do símbolo distingue unidades e independe do plural gramatical."
+    incorrect: "Use 5 kgs. e 12 v."
+    correct: "Use 5 kg e 12 V."
+    lint: {mode: automatic, engine: units, selector: prose_and_tables, condition: malformed_unit_symbol, parameters: {registry: SI}, autofix: safe, message: "Use o símbolo padronizado '{replacement}'."}
+
+  - id: R040
+    title: Declare faixa sem ambiguidade
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Escreva limites inclusivos ou exclusivos e repita a unidade quando a omissão puder confundir."
+    rationale: "Hífens e expressões abertas não informam inclusão dos extremos."
+    incorrect: "Aceitável: 5-10 V."
+    correct: "A tensão deve ser maior ou igual a 5 V e menor ou igual a 10 V."
+    lint: {mode: automatic, engine: numeric_range, selector: prose_and_tables, condition: ambiguous_range_notation, parameters: {patterns: [hyphen_range, open_ended_between]}, autofix: suggested, message: "Declare se os limites da faixa {range} são inclusivos."}
+
+  - id: R041
+    title: Use data não ambígua
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Em prosa, escreva dia, mês por extenso e ano; em dados, use RFC 3339."
+    rationale: "Datas numéricas mudam de interpretação entre localidades."
+    incorrect: "Revisão: 03/04/26."
+    correct: "Revisão: 3 de abril de 2026."
+    lint: {mode: automatic, engine: date, selector: prose, condition: ambiguous_numeric_date, parameters: {machine_format: RFC3339}, autofix: suggested, message: "Escreva a data por extenso ou use RFC 3339 em campo de dados."}
+
+  - id: R042
+    title: Use separador decimal do perfil
+    category: data
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Use o separador decimal definido pela localidade e não misture convenções no mesmo documento."
+    rationale: "Mistura de ponto e vírgula pode alterar valores por fator de mil."
+    incorrect: "Ajuste A para 1,250 V e B para 1.250 V."
+    correct: "No perfil pt-BR, ajuste A para 1,250 V e B para 1,250 V."
+    lint: {mode: automatic, engine: number_format, selector: prose_and_tables, condition: decimal_separator_mismatch_or_mixed, parameters: {from_locale: true}, autofix: none, message: "O número '{value}' não segue o separador decimal de {locale}."}
+
+  - id: R043
+    title: Use título que identifique tarefa ou objeto
+    category: structure
+    level: pte-estrutura
+    status: experimental
+    severity: warning
+    description: "Escreva título específico com verbo no infinitivo para tarefa ou nome técnico para referência."
+    rationale: "Título previsível melhora navegação, busca e classificação automática."
+    incorrect: "Informações gerais"
+    correct: "Calibrar o sensor de pressão"
+    lint: {mode: assisted, engine: heading, selector: heading, condition: vague_or_type_mismatched_title, parameters: {procedure_form: infinitive}, autofix: none, message: "Torne o título específico para a tarefa ou o objeto."}
+
+  - id: R044
+    title: Use listas com elementos paralelos
+    category: structure
+    level: pte-estrutura
+    status: experimental
+    severity: warning
+    description: "Inicie itens equivalentes com a mesma classe gramatical e mantenha o mesmo tipo de informação."
+    rationale: "Paralelismo revela diferenças reais e reduz leitura regressiva."
+    incorrect: "Pré-requisitos: desligar a energia; a tampa está fechada; luvas."
+    correct: "Pré-requisitos: desligar a energia; fechar a tampa; vestir as luvas."
+    lint: {mode: assisted, engine: list_parallelism, selector: list, condition: nonparallel_item_openings, parameters: {confidence: 0.75}, autofix: none, message: "Os itens desta lista não têm estrutura paralela."}
+
+  - id: R045
+    title: Dê texto descritivo a links e referências
+    category: structure
+    level: pte-estrutura
+    status: experimental
+    severity: warning
+    description: "Faça o texto do link identificar o destino; não use apenas 'aqui', URL ou posição."
+    rationale: "Texto descritivo funciona fora do layout e melhora acessibilidade."
+    incorrect: "Para calibrar, clique aqui."
+    correct: "Consulte PROC-022 — Calibrar o sensor."
+    lint: {mode: automatic, engine: link_text, selector: link, condition: non_descriptive_link_text, parameters: {forbidden: [aqui, saiba mais, link]}, autofix: none, message: "Descreva o destino deste link."}
+
+  - id: R046
+    title: Atribua identificador persistente à unidade
+    category: structure
+    level: pte-estrutura
+    status: experimental
+    severity: error
+    description: "Dê identificador único e persistente a procedimento, conceito, alerta reutilizável e tópico autônomo."
+    rationale: "IDs estáveis suportam referência, rastreabilidade, tradução e atualização."
+    incorrect: "## Troca do filtro"
+    correct: "id: PROC-FILTER-003; title: Substituir o filtro"
+    lint: {mode: automatic, engine: metadata, selector: content_unit, condition: missing_duplicate_or_changed_id, parameters: {pattern: "^[A-Z][A-Z0-9]+(?:-[A-Z0-9]+)+$"}, autofix: none, message: "A unidade precisa de identificador único e persistente."}
+
+  - id: R047
+    title: Torne cada unidade compreensível isoladamente
+    category: ai
+    level: pte-ia
+    status: experimental
+    severity: error
+    description: "Inclua na unidade o objeto, o estado e a condição necessários para interpretá-la fora da página."
+    rationale: "Busca e fragmentação removem contexto ancestral e podem mudar a ação recuperada."
+    incorrect: "Depois disso, reinicie-o."
+    correct: "Depois da atualização do controlador C7, reinicie o controlador C7."
+    lint: {mode: assisted, engine: context_dependency, selector: content_unit, condition: unresolved_external_context, parameters: {signals: [pronoun, positional_reference, omitted_subject]}, autofix: none, message: "Esta unidade depende de contexto que pode não acompanhar sua recuperação."}
+
+  - id: R048
+    title: Declare produto, variante e versão aplicáveis
+    category: ai
+    level: pte-ia
+    status: experimental
+    severity: error
+    description: "Registre em metadados os produtos, variantes e intervalos de versão que mudem a validade do conteúdo."
+    rationale: "Um agente precisa filtrar instruções incompatíveis antes de responder."
+    incorrect: "Este procedimento serve para o modelo novo."
+    correct: "applies_to: [{product: PUMP-X2, versions: '>=2.1 <3.0'}]"
+    lint: {mode: automatic, engine: metadata, selector: content_unit, condition: missing_or_unparseable_applicability, parameters: {require_when_variants_exist: true}, autofix: none, message: "Declare produto, variante e versão aplicáveis."}
+
+  - id: R049
+    title: Separe instrução, exemplo e conteúdo externo
+    category: ai
+    level: pte-ia
+    status: experimental
+    severity: error
+    description: "Marque semanticamente comandos literais, exemplos, citações e dados externos; não os apresente como instrução normativa."
+    rationale: "Fronteiras explícitas reduzem execução indevida de exemplo ou conteúdo não confiável."
+    incorrect: "Por exemplo, apague /dados e reinicie."
+    correct: "EXEMPLO (não executar): `rm arquivo-temporario`."
+    lint: {mode: assisted, engine: content_role, selector: content_unit, condition: executable_or_external_content_without_role, parameters: {roles: [instruction, example, quote, code, external_data]}, autofix: suggested, message: "Marque o papel deste conteúdo antes de processá-lo por IA."}
+
+  - id: R050
+    title: Registre proveniência e validade
+    category: ai
+    level: pte-ia
+    status: experimental
+    severity: error
+    description: "Inclua origem, revisão, estado de aprovação, data de revisão e critério de validade em cada unidade publicada."
+    rationale: "Proveniência permite selecionar a versão autorizada e rejeitar conteúdo vencido."
+    incorrect: "status: final"
+    correct: "source: ENG-42; revision: 3; status: approved; reviewed_at: 2026-08-06; valid_until: 2027-08-06"
+    lint: {mode: automatic, engine: metadata, selector: content_unit, condition: missing_invalid_or_expired_provenance, parameters: {required: [source, revision, status, reviewed_at], allowed_status: [draft, review, approved, obsolete]}, autofix: none, message: "Complete a proveniência ou revise a validade desta unidade."}

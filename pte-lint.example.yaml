@@ -1,0 +1,38 @@
+schema: https://pte100.org/schemas/pte-lint-config-1.json
+standard: PTE-100@0.1
+level: pte-claro
+locale: pt-BR
+
+include:
+  - "docs/**/*.md"
+  - "examples/**/*.md"
+exclude:
+  - "**/vendor/**"
+  - "**/*.generated.md"
+formats: [markdown]
+
+vocabularies:
+  - pte-core@0.1.0
+profiles: []
+profile_definitions:
+  mdn-web:
+    acronym_allowlist: [CSS, DOM, CORS, MDN, TITLE]
+    term_allowlist: [anotar, até, colocar, escolher, problema]
+source_profiles:
+  mdn-html-ptbr: mdn-web
+
+rules:
+  R012:
+    severity: warning
+    maximum: 25
+  R037: error
+  R047: off
+
+exceptions: .pte/exceptions.yaml
+fail_on: error
+cache: true
+
+output:
+  format: text
+  minimum_severity: info
+  show_confidence: true

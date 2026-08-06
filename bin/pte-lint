@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "optparse"
+require_relative "../lib/pte_lint"
+
+command = ARGV.shift || "check"
+options = {format: "text", paths: []}
+parser = OptionParser.new do |opts|
+  opts.banner = "Uso: pte-lint check [ARQUIVO|DIRETÓRIO...] [opções]"
+  opts.on("--config PATH", "Arquivo .pte-lint.yaml ou JSON") { |value| options[:config] = value }
+  opts.on("--level LEVEL", %w[pte-estrutura pte-claro pte-ia]) { |value| options[:level] = value }
+  opts.on("--locale LOCALE") { |value| options[:locale] = value }
+  opts.on("--format FORMAT", %w[text json sarif]) { |value| options[:format] = value }
+  opts.on("--stdin-filename NAME") { |value| options[:stdin_filename] = value }
+  opts.on("--help") { puts opts; exit 0 }
+end
+
+begin
+  parser.parse!(ARGV)
+rescue OptionParser::ParseError => error
+  warn error.message
+  exit 2
+end
+
+if command == "version"
+  puts({name: "pte-lint", version: "0.1.0", standard: "PTE-100@0.1"}.to_json)
+  exit 0
+end
+
+unless command == "check"
+  warn "Comando não implementado no MVP: #{command}"
+  exit 2
+end
+
+options[:paths] = ARGV
+runner = PteLint::Runner.new(config_path: options[:config], level: options[:level], locale: options[:locale])
+stdin_text = options[:paths].empty? && !STDIN.tty? ? STDIN.read : nil
+diagnostics = runner.check(options[:paths], stdin_text: stdin_text)
+files = options[:paths].empty? ? (stdin_text ? 1 : 0) : options[:paths].length
+result = runner.result(diagnostics, files: files)
+
+case options[:format]
+when "json"
+  puts JSON.pretty_generate(result)
+when "sarif"
+  sarif_results = diagnostics.map do |d|
+    {
+      "ruleId" => d["rule"],
+      "level" => d["severity"],
+      "message" => {"text" => d["message"]},
+      "locations" => [{"physicalLocation" => {
+        "artifactLocation" => {"uri" => d["file"]},
+        "region" => {"startLine" => d.dig("range", "start", "line"), "startColumn" => d.dig("range", "start", "column")}
+      }}]
+    }
+  end
+  runs = [{"tool" => {"driver" => {"name" => "pte-lint", "version" => "0.1.0"}}, "results" => sarif_results}]
+  puts JSON.pretty_generate("$schema" => "https://json.schemastore.org/sarif-2.1.0.json", "version" => "2.1.0", "runs" => runs)
+else
+  diagnostics.each do |diagnostic|
+    location = "#{diagnostic["file"]}:#{diagnostic.dig("range", "start", "line")}:#{diagnostic.dig("range", "start", "column")}"
+    puts "#{location} #{diagnostic["severity"]} #{diagnostic["rule"]} #{diagnostic["message"]}"
+  end
+  puts "#{result["summary"]["files"]} arquivo(s), #{result["summary"]["errors"]} erro(s), #{result["summary"]["warnings"]} aviso(s)" if diagnostics.any? || files.positive?
+end
+
+fail_on = runner.config.data.fetch("fail_on", "error")
+threshold = PteLint::SEVERITIES.fetch(fail_on, 3)
+exit diagnostics.any? { |diagnostic| PteLint::SEVERITIES.fetch(diagnostic["severity"], 0) >= threshold } ? 1 : 0

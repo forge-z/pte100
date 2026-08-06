@@ -1,0 +1,45 @@
+schema_version: "1.0"
+standard: PTE-100@0.1
+cases:
+  - {id: R001, class: positive, text: "Faça a checagem da bateria.", note: "Forma não preferida registrada no vocabulário."}
+  - {id: R001, class: negative, text: "Verifique a bateria.", note: "Termo preferido."}
+  - {id: R004, class: positive, text: "Conecte o CLP ao terminal X1.", note: "Sigla sem expansão."}
+  - {id: R004, class: negative, text: "Conecte o controlador lógico programável (CLP) ao terminal X1.", note: "Primeira ocorrência expandida."}
+  - {id: R005, class: positive, text: "Verifique a temp. amb.", note: "Abreviações registradas como sinal de erro."}
+  - {id: R005, class: negative, text: "Verifique a temperatura ambiente.", note: "Forma completa."}
+  - {id: R006, class: positive, text: "Efetuar a verificação do nível antes do teste.", note: "Nominalização registrada."}
+  - {id: R006, class: negative, text: "Verifique o nível antes do teste.", note: "Verbo direto."}
+  - {id: R012, class: positive, text: "Antes de iniciar a operação, somente pessoal autorizado deve verificar todos os cabos instalados durante a etapa anterior e confirmar que cada cabo está firme, conectado e sem dano visível no painel.", note: "Mais de 25 palavras."}
+  - {id: R012, class: negative, text: "Verifique o cabo.", note: "Frase curta."}
+  - {id: R014, class: positive, text: "Substitua o fusível se o indicador permanecer apagado.", note: "Condição posterior à ação."}
+  - {id: R014, class: negative, text: "Se o indicador permanecer apagado, substitua o fusível.", note: "Condição antes da ação."}
+  - {id: R017, class: positive, text: "Não remova o cabo sem desligar o sistema.", note: "Duas marcas negativas."}
+  - {id: R017, class: negative, text: "Não remova o cabo.", note: "Uma marca negativa."}
+  - {id: R018, class: positive, text: "O operador deverá registrar a leitura.", note: "Futuro usado como requisito."}
+  - {id: R018, class: negative, text: "O operador deve registrar a leitura.", note: "Modalidade normativa."}
+  - {id: R021, class: positive, text: "- A remoção da tampa deve ser feita.", note: "Passo sem ação inicial."}
+  - {id: R021, class: negative, text: "- Remova a tampa.", note: "Passo iniciado por imperativo."}
+  - {id: R029, class: positive, text: "Consulte o passo acima.", note: "Referência posicional."}
+  - {id: R029, class: negative, text: "Execute PROC-014 — Testar a válvula.", note: "ID e título estáveis."}
+  - {id: R031, class: positive, text: "IMPORTANTE: há tensão residual.", note: "Palavra-sinal não registrada."}
+  - {id: R031, class: negative, text: "ADVERTÊNCIA — Tensão residual.", note: "Palavra-sinal registrada."}
+  - {id: R037, class: positive, text: "Mantenha distância de 10 inches.", note: "Unidade fora do perfil SI."}
+  - {id: R037, class: negative, text: "Mantenha distância de 250 mm.", note: "Unidade SI."}
+  - {id: R038, class: positive, text: "A tensão é 24 V.", note: "Espaço comum entre valor e unidade."}
+  - {id: R038, class: negative, text: "A tensão é 24 V.", note: "Espaço inquebrável."}
+  - {id: R039, class: positive, text: "Use 5 kgs.", note: "Símbolo pluralizado."}
+  - {id: R039, class: negative, text: "Use 5 kg.", note: "Símbolo SI correto."}
+  - {id: R040, class: positive, text: "Faixa aceitável: 5-10 V.", note: "Hífen não declara inclusão."}
+  - {id: R040, class: negative, text: "A tensão deve ser maior ou igual a 5 V e menor ou igual a 10 V.", note: "Limites explícitos."}
+  - {id: R041, class: positive, text: "Revisão: 03/04/26.", note: "Data numérica ambígua."}
+  - {id: R041, class: negative, text: "Revisão: 3 de abril de 2026.", note: "Data por extenso."}
+  - {id: R042, class: positive, text: "A tensão é 1.250 V.", note: "Ponto decimal em perfil pt-BR."}
+  - {id: R042, class: negative, text: "A tensão é 1,250 V.", note: "Vírgula decimal em perfil pt-BR."}
+  - {id: R045, class: positive, text: "Para calibrar, clique [aqui](#proc).", note: "Texto de link não descritivo."}
+  - {id: R045, class: negative, text: "Consulte [PROC-022 — Calibrar o sensor](#proc).", note: "Destino descrito."}
+  - {id: R046, class: positive, text: "---\ntitle: Procedimento sem ID\ntype: procedure\nlocale: pt-BR\nsource: ENG-42\nrevision: 1\nstatus: approved\nreviewed_at: 2026-08-06\n---\n\n# Substituir o filtro\n", note: "Unidade com front matter sem ID."}
+  - {id: R046, class: negative, text: "---\nid: PROC-FILTER-001\ntitle: Substituir o filtro\ntype: procedure\nlocale: pt-BR\nsource: ENG-42\nrevision: 1\nstatus: approved\nreviewed_at: 2026-08-06\n---\n\n# Substituir o filtro\n", note: "ID persistente presente."}
+  - {id: R048, class: positive, text: "---\nid: PROC-PUMP-001\ntitle: Operar a bomba\ntype: procedure\nlocale: pt-BR\nmodels: [X1, X2]\nsource: ENG-42\nrevision: 1\nstatus: approved\nreviewed_at: 2026-08-06\n---\n\n# Operar a bomba\n", note: "Variantes sem applies_to."}
+  - {id: R048, class: negative, text: "---\nid: PROC-PUMP-001\ntitle: Operar a bomba\ntype: procedure\nlocale: pt-BR\napplies_to:\n  - product: PUMP-X2\n    versions: '>=2.1 <3.0'\nsource: ENG-42\nrevision: 1\nstatus: approved\nreviewed_at: 2026-08-06\n---\n\n# Operar a bomba\n", note: "Aplicabilidade declarada."}
+  - {id: R050, class: positive, text: "---\nid: PROC-CTRL-001\ntitle: Reiniciar o controlador\nrevision: 3\nstatus: final\n---\n\n# Reiniciar o controlador\n", note: "Proveniência incompleta e status inválido."}
+  - {id: R050, class: negative, text: "---\nid: PROC-CTRL-001\ntitle: Reiniciar o controlador\nrevision: 3\nstatus: approved\nsource: ENG-42\nreviewed_at: 2026-08-06\n---\n\n# Reiniciar o controlador\n", note: "Proveniência mínima válida."}

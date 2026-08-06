@@ -1,0 +1,77 @@
+version: "0.1"
+schema: "pte-corpus-source@0.1"
+
+# O texto integral permanece em .pte-cache/corpus/, ignorado pelo Git.
+# O repositório versiona este manifesto e fixtures derivados revisados.
+policy:
+  full_text_storage: external-cache
+  cache_dir: .pte-cache/corpus
+  derived_artifacts: metadata-and-reviewed-fixtures
+  preserve_attribution: true
+  pin_snapshot: true
+
+sources:
+  - id: python-tutorial-ptbr
+    title: O tutorial do Python
+    url: https://docs.python.org/pt-br/3/tutorial/index.html
+    platform: Python Documentation
+    locale: pt-BR
+    kind: tutorial
+    license:
+      name: PSF-2.0
+      url: https://docs.python.org/pt-br/3/license.html
+      attribution_required: true
+      code_examples: Zero-Clause BSD para exemplos atuais
+    snapshot:
+      strategy: versioned-url-and-retrieval-date
+      version: "3.x"
+    extraction:
+      include: [h1, h2, h3, h4, p, li, blockquote, pre]
+      exclude: [script, style, nav, footer, header, aside]
+    quality:
+      source_status: official
+      translation_status: official
+      notes: Use capítulos e exemplos para testar clareza, terminologia e blocos de código.
+
+  - id: mdn-html-ptbr
+    title: "HTML: Linguagem de Marcação de Hipertexto"
+    url: https://developer.mozilla.org/pt-BR/docs/Web/HTML
+    platform: MDN Web Docs
+    locale: pt-BR
+    kind: reference
+    license:
+      name: CC-BY-SA-2.5-plus
+      url: https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license
+      attribution_required: true
+      code_examples: CC0 para exemplos novos; MIT para exemplos legados
+    snapshot:
+      strategy: url-and-retrieval-date
+    extraction:
+      include: [h1, h2, h3, h4, p, li, blockquote, pre]
+      exclude: [script, style, nav, footer, header, aside]
+    quality:
+      source_status: open-wiki
+      translation_status: community-maintained
+      notes: Separar prosa, código e texto de interface antes de avaliar regras PTE.
+
+  - id: kubernetes-tools-ptbr
+    title: Instale as ferramentas
+    url: https://kubernetes.io/pt-br/docs/tasks/tools/
+    platform: Kubernetes Documentation
+    locale: pt-BR
+    kind: procedure
+    license:
+      name: CC-BY-4.0
+      url: https://github.com/kubernetes/website
+      attribution_required: true
+      code_examples: CC-BY-4.0 conforme o repositório do site
+    snapshot:
+      strategy: url-commit-and-retrieval-date
+      source_repository: https://github.com/kubernetes/website
+    extraction:
+      include: [h1, h2, h3, h4, p, li, blockquote, pre]
+      exclude: [script, style, nav, footer, header, aside]
+    quality:
+      source_status: official
+      translation_status: verify-at-snapshot
+      notes: Preserve o estado da tradução como metadado; não trate o texto como gold standard automático.

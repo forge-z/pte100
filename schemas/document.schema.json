@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pte100.org/schemas/document-1.json",
+  "title": "Metadados de unidade PTE",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["id", "type", "title", "locale", "revision", "status"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9]+(?:-[A-Z0-9]+)+$"},
+    "type": {"enum": ["concept", "reference", "procedure", "alert", "troubleshooting", "glossary"]},
+    "title": {"type": "string", "minLength": 1},
+    "locale": {"type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"},
+    "revision": {"oneOf": [{"type": "integer", "minimum": 1}, {"type": "string", "minLength": 1}]},
+    "status": {"enum": ["draft", "review", "approved", "obsolete"]},
+    "source": {"type": "string"},
+    "reviewed_at": {"type": "string", "format": "date"},
+    "valid_until": {"type": "string", "format": "date"},
+    "applies_to": {"type": "array", "items": {"type": ["string", "object"]}},
+    "requires": {"type": "array", "items": {"type": "string"}},
+    "parent_id": {"type": "string"}
+  }
+}
+

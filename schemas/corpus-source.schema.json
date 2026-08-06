@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pte-100.org/schemas/corpus-source.schema.json",
+  "title": "PTE-100 corpus source manifest",
+  "type": "object",
+  "required": ["version", "schema", "policy", "sources"],
+  "properties": {
+    "version": {"type": "string"},
+    "schema": {"const": "pte-corpus-source@0.1"},
+    "policy": {
+      "type": "object",
+      "required": ["full_text_storage", "cache_dir", "preserve_attribution", "pin_snapshot"],
+      "properties": {
+        "full_text_storage": {"const": "external-cache"},
+        "cache_dir": {"type": "string"},
+        "preserve_attribution": {"type": "boolean"},
+        "pin_snapshot": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "url", "platform", "locale", "kind", "license", "snapshot", "extraction", "quality"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "title": {"type": "string", "minLength": 1},
+          "url": {"type": "string", "format": "uri"},
+          "platform": {"type": "string", "minLength": 1},
+          "locale": {"const": "pt-BR"},
+          "kind": {"enum": ["tutorial", "reference", "procedure"]},
+          "license": {
+            "type": "object",
+            "required": ["name", "url", "attribution_required"],
+            "properties": {
+              "name": {"type": "string"},
+              "url": {"type": "string", "format": "uri"},
+              "attribution_required": {"type": "boolean"},
+              "code_examples": {"type": "string"}
+            },
+            "additionalProperties": true
+          },
+          "snapshot": {"type": "object", "required": ["strategy"]},
+          "extraction": {
+            "type": "object",
+            "required": ["include", "exclude"],
+            "properties": {
+              "include": {"type": "array", "items": {"type": "string"}},
+              "exclude": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "quality": {"type": "object", "required": ["source_status", "translation_status"]}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "tool": {"name": "pte-lint", "version": "0.1.0"},
+  "configuration": {"standard": "PTE-100@0.1", "level": "pte-claro", "locale": "pt-BR", "digest": "sha256:example"},
+  "summary": {"files": 1, "errors": 0, "warnings": 1, "info": 0, "suppressed": 0},
+  "diagnostics": [
+    {
+      "rule": "R012",
+      "severity": "warning",
+      "message": "A frase tem 31 palavras; o limite é 25.",
+      "file": "manual.md",
+      "range": {"start": {"line": 12, "column": 1, "offset": 218}, "end": {"line": 12, "column": 184, "offset": 401}},
+      "mode": "automatic",
+      "confidence": 1,
+      "evidence": "Antes de iniciar...",
+      "suggestion": "Divida a condição e as verificações em frases separadas.",
+      "fingerprint": "R012:manual.md:sha256:example",
+      "documentation": "https://pte100.org/rules/R012"
+    }
+  ]
+}
+
