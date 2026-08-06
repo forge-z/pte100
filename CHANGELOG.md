@@ -29,5 +29,5 @@ Este projeto segue *Keep a Changelog* e versiona a norma conforme `GOVERNANCE.md
 - arquitetura de PTE-Lint, CLI, extensão VS Code, MCP Server e API REST;
 - governança, contribuição, segurança, exemplos e roteiro.
 
-[Não publicado]: https://github.com/pte-100/pte-100/compare/v0.1...HEAD
-[0.1]: https://github.com/pte-100/pte-100/releases/tag/v0.1
+[Não publicado]: https://github.com/aleolibor/pte-100/compare/v0.1...HEAD
+[0.1]: https://github.com/aleolibor/pte-100/releases/tag/v0.1
