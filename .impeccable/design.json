@@ -18,7 +18,7 @@
       "label": {"displayName": "Machine Label", "purpose": "Rule IDs, statuses, provenance, and coordinates."}
     },
     "shadows": [
-      {"name": "proof-offset", "value": "14px 14px 0 #101820", "purpose": "Physical offset under the marked proof sheet."},
+      {"name": "proof-offset", "value": "10px 10px 0 #101820", "purpose": "Physical offset under the marked proof sheet."},
       {"name": "terminal-offset", "value": "18px 18px 0 rgba(16,24,32,.24)", "purpose": "Separates the diagnostic terminal from the orange section."}
     ],
     "motion": [

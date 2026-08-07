@@ -124,10 +124,10 @@ Sections use generous vertical spacing, usually around 120–165px, while dense 
 
 ## Elevation & Depth
 
-The system is mostly flat and structural. Depth comes from borders, paper tonal shifts, and one deliberately physical offset shadow: the proof sheet uses a 14px navy shadow on desktop and 8px on mobile; the terminal uses a softer transparent offset. Avoid ambient glow and glass effects.
+The system is mostly flat and structural. Depth comes from borders, paper tonal shifts, and one deliberately physical offset shadow: the proof sheet uses a 10px navy shadow on desktop and 8px on mobile; the terminal uses a softer transparent offset. Avoid ambient glow and glass effects.
 
 ### Shadow Vocabulary
-- **Proof offset** (`14px 14px 0 #101820`): Makes the before/after sheet feel like a working document placed on the page.
+- **Proof offset** (`10px 10px 0 #101820`): Makes the before/after sheet feel like a working document placed on the page.
 - **Terminal offset** (`18px 18px 0 rgba(16,24,32,.24)`): Separates the diagnostic artifact from the orange field.
 
 ## Shapes
