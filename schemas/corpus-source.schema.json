@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pte-100.org/schemas/corpus-source.schema.json",
+  "$id": "https://forge-z.github.io/pte100/schemas/corpus-source.schema.json",
   "title": "PTE-100 corpus source manifest",
   "type": "object",
   "required": ["version", "schema", "policy", "sources"],

@@ -6,4 +6,6 @@
 dogfood-report.json
 coverage/
 dist/
+website/node_modules/
+website/.astro/
 tmp/

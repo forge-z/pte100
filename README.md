@@ -1,6 +1,6 @@
 # PTE-100 — Português Técnico Essencial
 
-[English overview](README.en.md)
+[English overview](README.en.md) · [Site público](https://forge-z.github.io/pte100/)
 
 [![Status: proposta v0.1](https://img.shields.io/badge/status-proposta%20v0.1-f5a623)](spec/PTE-100-v0.1.md)
 [![Licença: Apache-2.0](https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue)](LICENSE)
@@ -77,6 +77,7 @@ bin/pte-lint check corpus/fixtures/positive/R040.md --format json
 .
 ├── .github/              # modelos e automação de contribuição
 ├── docs/                 # arquitetura e contratos técnicos
+├── website/              # landing page pública no GitHub Pages
 ├── examples/             # exemplos normativos e informativos
 ├── corpus/               # fixtures, manifesto e snapshots do corpus externo
 ├── bin/                  # CLI pte-lint (MVP offline)

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pte100.org/schemas/rules-1.json",
+  "$id": "https://forge-z.github.io/pte100/schemas/rules-1.json",
   "title": "Pacote de regras PTE-100",
   "type": "object",
   "additionalProperties": false,

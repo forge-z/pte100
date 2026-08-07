@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-07T18:58:00Z",
+  "title": "Design System: PTE-100 Public Website",
+  "extensions": {
+    "colorMeta": {
+      "ink": {"role": "primary", "displayName": "Ink Navy", "canonical": "#101820", "tonalRamp": ["#101820", "#253139", "#3d4b52", "#59676d", "#758287", "#96a1a3", "#b8c1c1", "#dce1df"]},
+      "orange": {"role": "secondary", "displayName": "Revision Orange", "canonical": "#f26b38", "tonalRamp": ["#592313", "#7b321c", "#a04424", "#c6532b", "#f26b38", "#f68d63", "#f9b69c", "#fce0d5"]},
+      "orange-deep": {"role": "secondary", "displayName": "Revision Orange Deep", "canonical": "#c64c20", "tonalRamp": ["#42190e", "#652512", "#883618", "#a9421c", "#c64c20", "#dc7754", "#ebaa91", "#f6d2c5"]},
+      "lime": {"role": "tertiary", "displayName": "Validation Lime", "canonical": "#b9e66b", "tonalRamp": ["#293516", "#4e6527", "#718e3c", "#94b451", "#b9e66b", "#c9ec8c", "#d9f1aa", "#ebf8d5"]},
+      "paper": {"role": "neutral", "displayName": "Cool Paper", "canonical": "#f2f4f3", "tonalRamp": ["#202424", "#444a49", "#68716f", "#8d9794", "#b1bbb8", "#cbd2d0", "#e0e4e2", "#f2f4f3"]},
+      "paper-deep": {"role": "neutral", "displayName": "Paper Deep", "canonical": "#e3e8e7", "tonalRamp": ["#1e2423", "#424b49", "#66716e", "#8c9794", "#adb8b5", "#c5cecb", "#d4ddda", "#e3e8e7"]},
+      "paper-line": {"role": "neutral", "displayName": "Paper Line", "canonical": "#c8d0cf", "tonalRamp": ["#1b2120", "#3e4846", "#64706d", "#899591", "#aab6b2", "#c8d0cf", "#dbe1de", "#edf1ef"]},
+      "white": {"role": "neutral", "displayName": "Proof White", "canonical": "#fbfcfb", "tonalRamp": ["#202323", "#454947", "#6a706e", "#8f9693", "#b5bcba", "#d0d5d3", "#e6e9e8", "#fbfcfb"]}
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Proof Headline", "purpose": "Large editorial thesis and closing statements."},
+      "label": {"displayName": "Machine Label", "purpose": "Rule IDs, statuses, provenance, and coordinates."}
+    },
+    "shadows": [
+      {"name": "proof-offset", "value": "14px 14px 0 #101820", "purpose": "Physical offset under the marked proof sheet."},
+      {"name": "terminal-offset", "value": "18px 18px 0 rgba(16,24,32,.24)", "purpose": "Separates the diagnostic terminal from the orange section."}
+    ],
+    "motion": [
+      {"name": "state-standard", "value": "200ms ease", "purpose": "Links, buttons, and rule-row state changes."},
+      {"name": "reduced-motion", "value": "prefers-reduced-motion", "purpose": "Removes transitions and smooth scrolling when requested."}
+    ],
+    "breakpoints": [
+      {"name": "mobile", "value": "680px"},
+      {"name": "tablet", "value": "980px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "High-contrast action that points to the canonical repository or specification.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">READ THE SPEC ↗</a>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; gap:14px; min-height:48px; padding:0 19px; background:#101820; color:#f2f4f3; border:1px solid #101820; font:700 12px/1 'DM Mono','Courier New',monospace; text-decoration:none; transition:transform .2s ease,background .2s ease; } .ds-btn-primary:hover { transform:translateY(-3px); background:#c64c20; border-color:#c64c20; } .ds-btn-primary:focus-visible { outline:3px solid #f26b38; outline-offset:5px; }"
+    },
+    {
+      "name": "Light Button",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "Light action used on the orange tool section.",
+      "html": "<a class=\"ds-btn-light\" href=\"#\">OPEN PTE-LINT ↗</a>",
+      "css": ".ds-btn-light { display:inline-flex; align-items:center; gap:14px; min-height:48px; padding:0 19px; background:#f2f4f3; color:#101820; border:1px solid #f2f4f3; font:700 12px/1 'DM Mono','Courier New',monospace; text-decoration:none; transition:transform .2s ease,background .2s ease; } .ds-btn-light:hover { transform:translateY(-3px); background:#b9e66b; border-color:#b9e66b; } .ds-btn-light:focus-visible { outline:3px solid #b9e66b; outline-offset:5px; }"
+    },
+    {
+      "name": "Annotated Proof Sheet",
+      "kind": "custom",
+      "refersTo": "proof-sheet",
+      "description": "Signature before/after artifact that demonstrates the standard before explaining it.",
+      "html": "<div class=\"ds-proof-sheet\"><small>pte / prova 001</small><h3>antes / depois</h3><p>Uma instrução mais clara.</p></div>",
+      "css": ".ds-proof-sheet { padding:28px; background:#fbfcfb; color:#101820; border:1px solid #101820; box-shadow:14px 14px 0 #101820; } .ds-proof-sheet small { color:#c64c20; font:500 10px 'DM Mono','Courier New',monospace; letter-spacing:.1em; text-transform:uppercase; } .ds-proof-sheet h3 { font:600 34px/.98 Georgia,serif; letter-spacing:-.06em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A technical proof sheet",
+    "overview": "The landing page treats controlled language as an editorial engineering practice. It borrows the visual discipline of a marked-up proof: cool paper, dark ink, measurement lines, small machine labels, and orange interventions that show where meaning becomes more precise. The tone is direct and open, not corporate and not an AI product dashboard.\n\nThe page moves from a concrete before/after example to the rule system, then to the offline linter and the public repository. The signature is the proof sheet itself: the page demonstrates its claim before explaining it.",
+    "keyCharacteristics": ["Cool paper and ink, with orange corrections and lime validation states.", "Serif display voice paired with sans-serif reading text and mono annotations.", "Horizontal rules, measurement marks, and zero-radius rectangular forms.", "The repository remains the canonical source; the website is an entry point."],
+    "rules": [
+      {"name": "The Mark Means Something Rule", "body": "Orange and lime are functional signals, not decorative sprinkles: orange intervenes, lime validates.", "section": "colors"},
+      {"name": "The Copy Is the Interface Rule", "body": "Headlines carry the point of view; labels provide coordinates and never replace the message.", "section": "typography"}
+    ],
+    "dos": ["Do show the PTE-100 mechanism through a real before/after example before making abstract claims.", "Do use the orange and lime accents as meaningful editorial states.", "Do keep links and CTAs pointed at the canonical forge-z/pte100 repository.", "Do preserve the experimental status of v0.1 in public-facing copy."],
+    "donts": ["Don't introduce customer logos, testimonials, benchmarks, certification, or adoption claims without evidence.", "Don't turn the landing page into a second source of normative rules.", "Don't replace the proof-sheet composition with a generic hero-plus-icon-card layout.", "Don't use gradients, glass effects, or decorative glow as substitutes for content."]
+  }
+}

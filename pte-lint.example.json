@@ -1,5 +1,5 @@
 {
-  "schema": "https://pte100.org/schemas/pte-lint-config-1.json",
+  "schema": "https://forge-z.github.io/pte100/schemas/pte-lint-config-1.json",
   "standard": "PTE-100@0.1",
   "level": "pte-claro",
   "locale": "pt-BR",

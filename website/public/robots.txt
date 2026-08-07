@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://forge-z.github.io/pte100/sitemap.xml

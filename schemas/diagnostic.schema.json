@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pte100.org/schemas/diagnostic-1.json",
+  "$id": "https://forge-z.github.io/pte100/schemas/diagnostic-1.json",
   "title": "Resultado PTE-Lint",
   "type": "object",
   "additionalProperties": false,

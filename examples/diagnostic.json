@@ -15,7 +15,7 @@
       "evidence": "Antes de iniciar...",
       "suggestion": "Divida a condição e as verificações em frases separadas.",
       "fingerprint": "R012:manual.md:sha256:example",
-      "documentation": "https://pte100.org/rules/R012"
+      "documentation": "https://github.com/forge-z/pte100/blob/main/rules/catalog.md#r012"
     }
   ]
 }

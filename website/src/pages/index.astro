@@ -1,0 +1,196 @@
+---
+import '../styles/global.css';
+
+const repo = 'https://github.com/forge-z/pte100';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const levels = [
+  {
+    name: 'PTE-Estrutura',
+    text: 'Organiza títulos, alertas, listas, dados e referências.',
+    rules: 'R031–R046',
+  },
+  {
+    name: 'PTE-Claro',
+    text: 'Controla vocabulário, frases e procedimentos.',
+    rules: 'R001–R030',
+  },
+  {
+    name: 'PTE-IA',
+    text: 'Adiciona contexto, metadados, IDs e proveniência.',
+    rules: 'R047–R050',
+  },
+];
+
+const ruleGroups = [
+  ['Léxico', 'R001–R010'],
+  ['Frase', 'R011–R020'],
+  ['Procedimento', 'R021–R030'],
+  ['Alertas', 'R031–R036'],
+  ['Dados', 'R037–R042'],
+  ['Estrutura', 'R043–R046'],
+  ['IA', 'R047–R050'],
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="PTE-100: um padrão aberto para escrever documentação técnica em português com menos ambiguidade." />
+    <meta name="theme-color" content="#101820" />
+    <meta property="og:title" content="PTE-100 — Português Técnico Essencial" />
+    <meta property="og:description" content="Documentação técnica em português com menos ambiguidade." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href={`${base}/favicon.svg`} />
+    <title>PTE-100 — Português Técnico Essencial</title>
+  </head>
+  <body>
+    <!-- THESIS: Trate linguagem técnica como uma folha de prova: marque, teste e publique o sentido; recusamos a landing page genérica de IA.
+    OWN-WORLD: Papel frio, tinta azul-marinho, linhas de medição e marcações laranja de revisão; cada seção parece uma decisão editorial verificável.
+    STORY: O visitante vê uma frase ficar mais segura, entende os três níveis do padrão e escolhe ler, testar ou contribuir.
+    FIRST VIEWPORT: Cabeçalho compacto; à esquerda o título e três ações; à direita uma grande prova antes/depois com marcações de revisão.
+    FORM: Folha de prova técnica anotada, posição 3 da lista de direções fundamentadas, seed 0eae9946.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md -->
+    <header class="site-header shell">
+      <a class="wordmark" href={`${base}/`} aria-label="PTE-100, início">
+        <span class="wordmark-mark" aria-hidden="true">P/</span>
+        <span>PTE-100</span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a href="#por-que">Por que</a>
+        <a href="#estrutura">Estrutura</a>
+        <a href="#ferramentas">Ferramentas</a>
+        <a class="nav-github" href={repo}>GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="stamp"><span class="stamp-dot"></span> Proposta pública · v0.1</p>
+          <h1 id="hero-title">Documentação técnica em português <em>sem o ruído.</em></h1>
+          <p class="hero-lede">Um padrão aberto para tornar ações, condições, riscos e referências mais claros — para pessoas, tradutores e agentes de IA.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href={`${repo}/blob/main/spec/PTE-100-v0.1.md`}>Ler a especificação <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href={`${repo}#comece-por-aqui`}>Começar no GitHub <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="hero-footnote"><span>01</span><span>Uma linguagem controlada não empobrece o conteúdo técnico. Ela protege o sentido.</span></div>
+        </div>
+
+        <div class="proof-sheet" aria-label="Demonstração de revisão de uma instrução técnica">
+          <div class="sheet-topline"><span>pte / prova 001</span><span>sentido operacional</span><span class="sheet-status">● revisado</span></div>
+          <div class="sheet-grid">
+            <div class="sheet-margin"><span>linha</span><strong>07</strong><i></i><i></i><i></i></div>
+            <div class="sheet-content">
+              <p class="sheet-label">antes <span>ambíguo</span></p>
+              <p class="old-copy">O operador deverá efetuar a verificação do nível e, caso seja necessário, proceder com o completamento do reservatório, sendo que o motor deve estar desligado.</p>
+              <div class="strike-line" aria-hidden="true"></div>
+              <p class="sheet-label after-label">depois <span>verificável</span></p>
+              <ol class="new-copy">
+                <li>Desligue o motor.</li>
+                <li>Verifique o nível do reservatório.</li>
+                <li>Se o nível estiver abaixo da marca <b>MÍN</b>, adicione fluido até a marca <b>MÁX</b>.</li>
+              </ol>
+              <div class="proof-note"><span class="note-pin">↳</span><span>Ação direta. Condição explícita. Resultado que pode ser conferido.</span></div>
+            </div>
+          </div>
+          <div class="sheet-bottom"><span>R006 · R011 · R014 · R021 · R026</span><span>pte-100:0.1</span></div>
+        </div>
+      </section>
+
+      <section class="manifesto shell" id="por-que" aria-labelledby="manifesto-title">
+        <div class="section-marker">A proposta</div>
+        <div class="manifesto-body">
+          <h2 id="manifesto-title">Clareza é uma decisão de engenharia.</h2>
+          <p class="manifesto-lede">O PTE-100 parte de um problema simples: uma instrução pode estar gramaticalmente correta e ainda assim permitir interpretações operacionais diferentes.</p>
+          <div class="principles">
+            <div class="principle"><span>01</span><strong>Uma interpretação operacional</strong><p>Quem age, o que faz, em que ordem e sob quais condições.</p></div>
+            <div class="principle"><span>02</span><strong>Uma forma por conceito</strong><p>Termos consistentes reduzem ambiguidade, retrabalho e custo de tradução.</p></div>
+            <div class="principle"><span>03</span><strong>Segurança antes da brevidade</strong><p>Uma frase pode repetir o termo quando isso evita um risco.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="levels-section" id="estrutura" aria-labelledby="levels-title">
+        <div class="shell">
+          <div class="section-heading">
+            <div class="section-marker">Como funciona</div>
+            <h2 id="levels-title">Uma norma que cresce<br /><em>com o seu conteúdo.</em></h2>
+            <p>Os níveis são cumulativos. Comece pela estrutura, avance para a clareza e prepare cada unidade para ser encontrada, traduzida e compreendida por uma IA.</p>
+          </div>
+          <div class="levels-rail">
+            {levels.map((level, index) => (
+              <article class:list={["level", `level-${index + 1}`]}>
+                <div class="level-number">0{index + 1}</div>
+                <div class="level-rule" aria-hidden="true"></div>
+                <h3>{level.name}</h3>
+                <p>{level.text}</p>
+                <span class="level-rules">{level.rules}</span>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="rules-section shell" aria-labelledby="rules-title">
+        <div class="rules-intro">
+          <div class="section-marker">O núcleo</div>
+          <h2 id="rules-title">50 regras.<br /><em>Um vocabulário comum.</em></h2>
+          <p>O catálogo v0.1 transforma decisões editoriais em regras legíveis por pessoas e ferramentas. A fonte canônica é YAML; o catálogo humano é gerado a partir dela.</p>
+          <a class="text-link" href={`${repo}/blob/main/rules/catalog.md`}>Explorar o catálogo <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="rule-index" aria-label="Categorias das regras PTE-100">
+          {ruleGroups.map(([name, range]) => (
+            <a class="rule-row" href={`${repo}/blob/main/rules/catalog.md#${name.toLowerCase()}`}>
+              <span>{name}</span><b>{range}</b><span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="tool-section" id="ferramentas" aria-labelledby="tool-title">
+        <div class="shell tool-layout">
+          <div class="tool-copy">
+            <div class="section-marker">Já dá para testar</div>
+            <h2 id="tool-title">Do texto ao diagnóstico.</h2>
+            <p>O PTE-Lint é o MVP offline que transforma as regras automáticas em feedback explicável. Ele preserva o arquivo original, mostra a regra violada e sugere um caminho de revisão.</p>
+            <div class="tool-stats"><span><strong>21</strong> regras automáticas</span><span><strong>0</strong> rede por padrão</span><span><strong>3</strong> formatos de saída</span></div>
+            <a class="button button-light" href={`${repo}/tree/main/bin`}>Ver o PTE-Lint <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="terminal" aria-label="Exemplo de saída do PTE-Lint">
+            <div class="terminal-bar"><span class="terminal-lights" aria-hidden="true"><i></i><i></i><i></i></span><span>pte-lint / procedure.md</span><span>offline</span></div>
+            <div class="terminal-body">
+              <p><span class="terminal-prompt">$</span> bin/pte-lint check procedure.md</p>
+              <p class="terminal-muted">analisando 1 arquivo · perfil pte-claro</p>
+              <p class="terminal-error"><b>R014</b> condição de execução posterior à ação</p>
+              <p class="terminal-line">&nbsp;&nbsp;Substitua o fusível <u>se o indicador permanecer apagado</u>.</p>
+              <p class="terminal-fix"><span>↳</span> Mova a condição para antes da ação.</p>
+              <p class="terminal-success">✓ análise concluída · 1 diagnóstico explicável</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing shell" aria-labelledby="closing-title">
+        <div class="closing-mark" aria-hidden="true">P/</div>
+        <div>
+          <div class="section-marker">A proposta é pública</div>
+          <h2 id="closing-title">Leia. Teste.<br /><em>Ajude a melhorar.</em></h2>
+        </div>
+        <div class="closing-actions">
+          <p>O PTE-100 ainda está em versão experimental. Use em pilotos, registre falsos positivos e envie evidências.</p>
+          <a class="button button-primary" href={repo}>Abrir o repositório <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href={`${repo}/discussions`}>Participar das discussões <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer shell">
+      <div><span class="wordmark-mark" aria-hidden="true">P/</span> PTE-100 · Português Técnico Essencial</div>
+      <div class="footer-links"><a href={`${repo}/blob/main/spec/PTE-100-v0.1.md`}>Especificação v0.1</a><a href={`${repo}/blob/main/LICENSE`}>Apache-2.0</a><a href={`${repo}/blob/main/README.en.md`}>English overview</a></div>
+      <p>Um padrão original e independente. Não é tradução, adaptação oficial nem implementação do ASD-STE100.</p>
+    </footer>
+  </body>
+</html>

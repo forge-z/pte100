@@ -79,7 +79,7 @@ def fetch_url(url, redirects = 0)
 
   uri = URI.parse(url)
   request = Net::HTTP::Get.new(uri)
-  request["User-Agent"] = "PTE-100-corpus/0.1 (+https://pte-100.org)"
+  request["User-Agent"] = "PTE-100-corpus/0.1 (+https://forge-z.github.io/pte100)"
   response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 20, read_timeout: 30) do |http|
     http.request(request)
   end

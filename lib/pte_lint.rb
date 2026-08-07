@@ -491,7 +491,7 @@ module PteLint
         "confidence" => confidence,
         "evidence" => evidence.to_s.strip,
         "fingerprint" => fingerprint,
-        "documentation" => "https://pte100.org/rules/#{rule.fetch("id")}"
+        "documentation" => "https://github.com/forge-z/pte100/blob/main/rules/catalog.md##{rule.fetch("id").downcase}"
       }
       result["suggestion"] = suggestion if suggestion
       result["fix"] = {"safety" => fix_safety, "replacement" => suggestion} if suggestion && fix_safety

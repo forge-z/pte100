@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pte-100.org/schemas/corpus-annotation.schema.json",
+  "$id": "https://forge-z.github.io/pte100/schemas/corpus-annotation.schema.json",
   "title": "PTE-100 corpus annotation",
   "type": "object",
   "required": ["schema", "unit_id", "source_id", "sha256", "decision", "applicable_rules", "rationale"],

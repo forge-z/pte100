@@ -12,6 +12,7 @@ Este projeto segue *Keep a Changelog* e versiona a norma conforme `GOVERNANCE.md
 
 ### Adicionado
 
+- landing page pública em `website/`, publicada pelo GitHub Pages;
 - MVP offline do PTE-Lint para as 21 regras automáticas;
 - CLI `bin/pte-lint` com saída texto, JSON e SARIF;
 - corpus sintético anotado com 42 fixtures e testes Minitest;
