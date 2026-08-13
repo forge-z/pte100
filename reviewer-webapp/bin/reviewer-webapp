@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+require "bundler/setup"
+require_relative "../server/reviewer_server"
+
+port = (ENV["PTE_REVIEWER_PORT"] || "43100").to_i
+ReviewerServer.new(port: port).start

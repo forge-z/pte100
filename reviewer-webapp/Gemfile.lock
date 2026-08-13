@@ -1,0 +1,26 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    Ascii85 (1.1.1)
+    afm (0.2.2)
+    hashery (2.1.2)
+    minitest (5.25.4)
+    pdf-reader (2.16.0)
+      Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (>= 0.2.1, < 2)
+      hashery (~> 2.0)
+      ttfunk
+    ttfunk (1.7.0)
+    webrick (1.9.2)
+
+PLATFORMS
+  ruby
+  x64-mingw32
+
+DEPENDENCIES
+  minitest (~> 5.0)
+  pdf-reader (~> 2.15)
+  webrick (~> 1.9)
+
+BUNDLED WITH
+   1.17.2
