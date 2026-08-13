@@ -1,9 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Perguntas e adoção
-    url: https://github.com/forge-z/pte100/discussions
-    about: Use Discussions para perguntas que não sejam defeitos ou propostas.
-  - name: Vulnerabilidade
-    url: https://github.com/forge-z/pte100/security/advisories/new
-    about: Relate falhas de segurança em caráter privado.
-

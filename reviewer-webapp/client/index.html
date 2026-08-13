@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#263338">
+    <meta name="description" content="Revisão técnica local com o PTE-Lint.">
+    <title>PTE-100 Reviewer — revisão local</title>
+    <link rel="stylesheet" href="/app.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="wordmark" href="/" aria-label="PTE-100 Reviewer, início">
+          <span class="wordmark-mark" aria-hidden="true">P/</span>
+          <span>PTE-100</span>
+          <span class="wordmark-product">REVIEWER</span>
+        </a>
+        <div class="header-actions">
+          <span class="local-status"><i aria-hidden="true"></i> PROCESSAMENTO LOCAL</span>
+          <span id="engine-version">motor carregando…</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="stamp"><span class="stamp-dot"></span> PTE-LINT / REVISÃO LOCAL</p>
+            <h1 id="page-title">Revise um documento técnico<br><em>antes de publicar.</em></h1>
+            <p class="hero-lede">Escolha um arquivo e veja onde a redação pode ficar mais clara. A análise roda no seu computador e mostra a regra por trás de cada apontamento.</p>
+            <p class="hero-note"><span>01</span><span>O arquivo fica no seu dispositivo. Você decide o que mudar.</span></p>
+          </div>
+
+          <div class="review-sheet">
+            <div class="sheet-topline"><span>pte / documento</span><span class="sheet-status"><i aria-hidden="true"></i> local</span></div>
+            <div class="sheet-body">
+              <div class="sheet-label">01 — escolha o documento</div>
+              <div id="drop-zone" class="upload-card" tabindex="0" role="button" aria-describedby="upload-help">
+                <input id="file-input" type="file" accept=".md,.markdown,.txt,.pdf,text/markdown,text/plain,application/pdf" hidden>
+                <div class="upload-icon" aria-hidden="true">↑</div>
+                <h2>Solte o arquivo aqui</h2>
+                <p>ou <button class="text-button" id="browse-button" type="button">procure no dispositivo</button></p>
+                <p class="upload-help" id="upload-help">Markdown, texto simples ou PDF · até 5 MB</p>
+                <div class="upload-error" id="upload-error" role="alert" hidden></div>
+              </div>
+
+              <div class="sheet-label settings-label">02 — defina a revisão</div>
+              <div class="settings-row">
+                <div class="field">
+                  <label for="level-select">NÍVEL PTE-100</label>
+                  <select id="level-select" class="select-control">
+                    <option value="pte-estrutura">PTE-estrutura</option>
+                    <option value="pte-claro" selected>PTE-claro</option>
+                    <option value="pte-ia">PTE-ia</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="locale-select">LOCALIDADE</label>
+                  <select id="locale-select" class="select-control">
+                    <option value="pt-BR" selected>pt-BR</option>
+                  </select>
+                </div>
+              </div>
+              <button id="review-button" class="primary-button" type="button" disabled>Iniciar revisão <span aria-hidden="true">→</span></button>
+              <p class="selection-note" id="selection-note">Nenhum documento selecionado.</p>
+            </div>
+            <div class="sheet-bottom"><span>pte-100:0.1</span><span>sem rede por padrão</span></div>
+          </div>
+        </section>
+
+        <section id="results-panel" class="results-section" aria-labelledby="results-title" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="section-marker">03 — diagnóstico</p>
+              <h2 id="results-title">Pontos para<br><em>revisar.</em></h2>
+            </div>
+            <div class="results-actions">
+              <button class="secondary-button" id="export-button" type="button">Exportar JSON <span aria-hidden="true">↓</span></button>
+              <button class="quiet-button" id="clear-button" type="button">Remover documento</button>
+            </div>
+          </div>
+
+          <div class="summary-grid" aria-live="polite">
+            <div class="summary-card summary-total"><span class="summary-label">ACHADOS</span><strong id="total-count">0</strong><span>pontos encontrados</span></div>
+            <div class="summary-card"><span class="summary-label">ERROS</span><strong id="error-count">0</strong><span>requerem correção</span></div>
+            <div class="summary-card"><span class="summary-label">AVISOS</span><strong id="warning-count">0</strong><span>requerem revisão</span></div>
+            <div class="summary-card"><span class="summary-label">INFO</span><strong id="info-count">0</strong><span>notas da regra</span></div>
+          </div>
+
+          <div class="review-toolbar">
+            <div class="result-file"><span class="file-glyph" aria-hidden="true">□</span><span id="result-filename">documento.md</span><span class="result-file-meta" id="result-file-meta">—</span></div>
+            <div class="filter-group" role="group" aria-label="Filtrar achados">
+              <button class="filter-button active" data-filter="all" type="button">Todos <span id="filter-all-count">0</span></button>
+              <button class="filter-button" data-filter="error" type="button">Erros <span id="filter-error-count">0</span></button>
+              <button class="filter-button" data-filter="warning" type="button">Avisos <span id="filter-warning-count">0</span></button>
+              <button class="filter-button" data-filter="info" type="button">Info <span id="filter-info-count">0</span></button>
+            </div>
+          </div>
+
+          <div id="diagnostics-list" class="diagnostics-list" aria-live="polite"></div>
+          <div id="empty-results" class="empty-results" hidden>
+            <span class="empty-mark" aria-hidden="true">✓</span>
+            <h3>Nenhum achado neste nível.</h3>
+            <p>Nenhuma regra sinalizou este documento no nível escolhido. A revisão técnica do conteúdo continua necessária.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span><span class="footer-mark" aria-hidden="true">P/</span> PTE-100 · Português Técnico Essencial</span>
+        <span>v0.1 · proposta experimental · <a href="https://github.com/forge-z/pte100/blob/main/docs/pte-lint.md" target="_blank" rel="noreferrer">sobre o motor ↗</a></span>
+      </footer>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
