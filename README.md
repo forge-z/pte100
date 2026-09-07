@@ -59,6 +59,7 @@ bin/pte-lint check corpus/fixtures/positive/R040.md --format json
 | PTE-200 Vocabulary | registro e distribuição de vocabulários | planejado |
 | PTE-300 Domínios | perfis para setores técnicos | planejado |
 | PTE-Lint | analisador e formato de diagnósticos | MVP offline (21 regras automáticas) |
+| PTE-100 Reviewer | revisão local de Markdown, texto e PDF textual | MVP offline |
 | VS Code Extension | feedback durante a escrita | planejado |
 | MCP Server | validação e consulta por agentes | planejado |
 | API REST | validação remota e registro de termos | planejado |

@@ -81,7 +81,8 @@ module PteLint
     end
 
     def self.load(path = nil)
-      return new({}) unless path && File.file?(path)
+      return new({}) unless path
+      raise Errno::ENOENT, path unless File.file?(path)
 
       content = File.read(path, encoding: "UTF-8")
       data = File.extname(path).downcase == ".json" ? JSON.parse(content) : YAML.safe_load(content, permitted_classes: [], aliases: false)
@@ -163,6 +164,10 @@ module PteLint
       absolute_offset - (last_newline || -1)
     end
 
+    def byte_offset_for(offset)
+      @text[0...(offset + @body_offset)].to_s.bytesize
+    end
+
     def frontmatter?
       !@frontmatter.empty? || @text.start_with?("---\n")
     end
@@ -229,11 +234,12 @@ module PteLint
 
     def check_R004(document, rule)
       source = mask_literals(document.body)
-      definitions = source.scan(/\b[\p{L}][\p{L}\s-]{2,}\s*\(([A-ZÀ-Ú][A-ZÀ-Ú0-9-]{1,})\)/u).flatten
+      definitions = source.to_enum(:scan, /\b[\p{L}][\p{L}\s-]{2,}\s*\(([A-ZÀ-Ú][A-ZÀ-Ú0-9-]{1,})\)/u).map { Regexp.last_match }
       acronyms = source.to_enum(:scan, /\b[A-ZÀ-Ú]{2,}\b(?!-[A-ZÀ-Ú0-9])/u).map { Regexp.last_match }
       acronyms.filter_map do |match|
         acronym = match[0]
-        next if config.allowlist_for(document.context["source_id"]).include?(acronym) || definitions.include?(acronym)
+        definition = definitions.find { |candidate| candidate[1] == acronym }
+        next if config.allowlist_for(document.context["source_id"]).include?(acronym) || (definition && definition.begin(0) <= match.begin(0))
 
         diagnostic(document, rule, match.begin(0), "Expanda a sigla '#{acronym}' na primeira ocorrência desta unidade.", acronym)
       end
@@ -443,12 +449,16 @@ module PteLint
 
     def sentences(text)
       masked = mask_literals(text)
+      masked = masked.gsub(/^(?:[ \t]*\#{1,6}[ \t]+|[ \t]*>[ \t]?).*$/) { |line| line.gsub(/[^\n]/, " ") }
       results = []
-      start = 0
       masked.to_enum(:scan, /[^.!?]+[.!?]+|[^.!?]+$/u).map { Regexp.last_match }.each do |match|
-        value = text[match.begin(0)...match.end(0)]
-        results << {text: value.strip, offset: match.begin(0)} unless value.strip.empty? || value.lstrip.start_with?("#", ">")
-        start = match.end(0)
+        fragment = masked[match.begin(0)...match.end(0)]
+        leading = fragment.index(/\S/u)
+        next unless leading
+
+        offset = match.begin(0) + leading
+        value = text[offset...match.end(0)]
+        results << {text: value.strip, offset: offset} unless value.strip.empty?
       end
       results
     end
@@ -478,7 +488,10 @@ module PteLint
     def diagnostic(document, rule, offset, message, evidence, suggestion: nil, confidence: 1.0, fix_safety: nil)
       line = document.line_for(offset)
       column = document.column_for(offset)
-      absolute_offset = offset + document.body_offset
+      end_offset = offset + [evidence.to_s.length, 1].max
+      end_line = document.line_for(end_offset)
+      end_column = document.column_for(end_offset)
+      absolute_offset = document.byte_offset_for(offset)
       severity = config.severity(rule)
       fingerprint = Digest::SHA256.hexdigest([rule.fetch("id"), document.path, evidence.to_s.downcase.gsub(/\s+/, " ")].join("\0"))[0, 16]
       result = {
@@ -486,7 +499,7 @@ module PteLint
         "severity" => severity,
         "message" => message,
         "file" => document.path,
-        "range" => {"start" => {"line" => line, "column" => column, "offset" => absolute_offset}, "end" => {"line" => line, "column" => column + [evidence.to_s.length, 1].max, "offset" => absolute_offset + evidence.to_s.length}},
+        "range" => {"start" => {"line" => line, "column" => column, "offset" => absolute_offset}, "end" => {"line" => end_line, "column" => end_column, "offset" => document.byte_offset_for(end_offset)}},
         "mode" => rule.dig("lint", "mode"),
         "confidence" => confidence,
         "evidence" => evidence.to_s.strip,
@@ -500,7 +513,7 @@ module PteLint
   end
 
   class Runner
-    attr_reader :config
+    attr_reader :config, :last_checked_files
 
     def initialize(config_path: nil, level: nil, locale: nil, rules_path: nil, vocabulary_path: nil)
       discovered_config = config_path || %w[.pte-lint.yaml .pte-lint.yml .pte-lint.json].find { |candidate| File.file?(candidate) }
@@ -513,12 +526,14 @@ module PteLint
       @vocabulary = Vocabulary.new(vocabulary_path || File.join(root, "vocabulary", "core.yaml"))
     end
 
-    def check(paths, stdin_text: nil)
+    def check(paths, stdin_text: nil, stdin_filename: "<stdin>")
       engine = Engine.new(rule_pack: @rule_pack, vocabulary: @vocabulary, config: @config)
       files = expand_paths(paths)
       if files.empty? && stdin_text
-        return engine.check_text(stdin_text, "<stdin>")
+        @last_checked_files = [stdin_filename]
+        return engine.check_text(stdin_text, stdin_filename)
       end
+      @last_checked_files = files
       files.flat_map { |path| engine.check_file(path) }
     end
 
@@ -549,7 +564,10 @@ module PteLint
         elsif File.file?(path)
           [path]
         else
-          Dir.glob(path)
+          matches = Dir.glob(path)
+          raise ArgumentError, "Nenhum arquivo corresponde a '#{path}'." if matches.empty?
+
+          matches
         end
       end.uniq.sort
     end

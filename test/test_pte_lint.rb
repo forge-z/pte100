@@ -71,6 +71,35 @@ class PteLintFixturesTest < Minitest::Test
     assert_includes @engine.check_text("Faça isso se necessário.", "condition.md").map { |d| d.fetch("rule") }, "R014"
   end
 
+  def test_heading_does_not_hide_the_conditional_sentence_below
+    diagnostics = @engine.check_text("# Título\nFaça isso se necessário.", "heading.md")
+
+    assert_includes diagnostics.map { |diagnostic| diagnostic.fetch("rule") }, "R014"
+  end
+
+  def test_acronym_must_be_expanded_before_its_first_use
+    diagnostics = @engine.check_text("Use XYZ. Exemplo de sigla (XYZ).", "acronym.md")
+
+    assert_equal ["XYZ"], diagnostics.select { |diagnostic| diagnostic.fetch("rule") == "R004" }.map { |diagnostic| diagnostic.fetch("evidence") }
+  end
+
+  def test_diagnostic_offsets_are_utf8_bytes_and_ranges_cross_lines
+    document = PteLint::Document.new("unicode.md", "É 10 V.\nPróxima linha.")
+    diagnostic = @engine.send(:diagnostic, document, @pack.by_id.fetch("R038"), 2, "Teste", "10 V.\nPróxima")
+
+    assert_equal 3, diagnostic.dig("range", "start", "offset")
+    assert_equal 1, diagnostic.dig("range", "start", "line")
+    assert_equal 2, diagnostic.dig("range", "end", "line")
+    assert_equal "10 V.\nPróxima".bytesize + 3, diagnostic.dig("range", "end", "offset")
+  end
+
+  def test_runner_rejects_unmatched_path_and_missing_explicit_config
+    runner = PteLint::Runner.new(level: "pte-ia", locale: "pt-BR")
+
+    assert_raises(ArgumentError) { runner.check([File.join(ROOT, "missing.md")]) }
+    assert_raises(Errno::ENOENT) { PteLint::Config.load(File.join(ROOT, "missing.yaml")) }
+  end
+
   def test_vocabulary_allows_torque_context_but_flags_button_context
     torque = @engine.check_text("Aperte os parafusos a 12 N·m.", "torque.md")
     button = @engine.check_text("Aperte o botão REINICIAR.", "button.md")

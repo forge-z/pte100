@@ -16,6 +16,7 @@ Critério de saída: três pilotos públicos, pelo menos 1.000 frases avaliadas,
 ## Fase 1 — Ferramentas de referência (2026, quarto trimestre)
 
 - [x] disponibilizar MVP offline do PTE-Lint CLI em modo análise para as 21 regras automáticas;
+- [x] disponibilizar o PTE-100 Reviewer local para Markdown, texto simples e PDF com camada de texto;
 - [ ] transformar o MVP em pacote versionado com instalação documentada;
 - publicar pacote de schemas e API de biblioteca;
 - fornecer saída texto, JSON e SARIF;

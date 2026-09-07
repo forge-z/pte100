@@ -33,6 +33,8 @@ Adaptadores preservam offsets e marcam `prose`, `heading`, `step`, `alert`, `cod
 
 O arquivo padrão é `.pte-lint.yaml`, `.pte-lint.yml` ou `.pte-lint.json`. A forma está em `schemas/pte-lint-config.schema.json`; exemplos estão na raiz do repositório.
 
+Quando `--config PATH` é informado, o caminho precisa existir e ser legível; a CLI retorna código 2 se a configuração não puder ser carregada. Sem `--config`, a ausência de arquivo padrão usa a configuração interna. `fail_on: never` mantém os diagnósticos na saída, mas sempre retorna código 0.
+
 Perfis específicos podem declarar vocabulário contextual sem alterar o núcleo. `profile_definitions` contém as opções do perfil e `source_profiles` associa uma fonte identificada pelo adaptador ao perfil aplicável. As allowlists de siglas e termos de um perfil são somadas às regras globais; cada exceção deve ser justificada pelo domínio e pela fonte.
 
 Precedência, da menor para a maior:

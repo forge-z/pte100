@@ -35,11 +35,19 @@ unless command == "check"
 end
 
 options[:paths] = ARGV
-runner = PteLint::Runner.new(config_path: options[:config], level: options[:level], locale: options[:locale])
-stdin_text = options[:paths].empty? && !STDIN.tty? ? STDIN.read : nil
-diagnostics = runner.check(options[:paths], stdin_text: stdin_text)
-files = options[:paths].empty? ? (stdin_text ? 1 : 0) : options[:paths].length
-result = runner.result(diagnostics, files: files)
+begin
+  runner = PteLint::Runner.new(config_path: options[:config], level: options[:level], locale: options[:locale])
+  stdin_text = options[:paths].empty? && !STDIN.tty? ? STDIN.read : nil
+  diagnostics = runner.check(options[:paths], stdin_text: stdin_text, stdin_filename: options[:stdin_filename] || "<stdin>")
+  files = runner.last_checked_files.length
+  result = runner.result(diagnostics, files: files)
+rescue Errno::ENOENT, ArgumentError, Psych::Exception, JSON::ParserError => error
+  warn error.message
+  exit options[:config] ? 2 : 3
+rescue SystemCallError => error
+  warn error.message
+  exit 3
+end
 
 case options[:format]
 when "json"
@@ -67,5 +75,5 @@ else
 end
 
 fail_on = runner.config.data.fetch("fail_on", "error")
-threshold = PteLint::SEVERITIES.fetch(fail_on, 3)
-exit diagnostics.any? { |diagnostic| PteLint::SEVERITIES.fetch(diagnostic["severity"], 0) >= threshold } ? 1 : 0
+threshold = fail_on == "never" ? nil : PteLint::SEVERITIES.fetch(fail_on, 3)
+exit threshold && diagnostics.any? { |diagnostic| PteLint::SEVERITIES.fetch(diagnostic["severity"], 0) >= threshold } ? 1 : 0

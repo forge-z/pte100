@@ -14,6 +14,7 @@ class ReviewerServer
     @port = port
     @client_root = client_root
     @service = service
+    @review_lock = Mutex.new
   end
 
   def start
@@ -50,9 +51,9 @@ class ReviewerServer
     set_common_headers(response)
     path = request.path
     if path == "/api/v1/capabilities" && request.request_method == "GET"
-      json(response, 200, @service.capabilities)
+      require_local_request(request, response) { json(response, 200, @service.capabilities) }
     elsif path == "/api/v1/health" && request.request_method == "GET"
-      json(response, 200, { "status" => "ok", "service_version" => "0.2.0" })
+      require_local_request(request, response) { json(response, 200, { "status" => "ok", "service_version" => "0.2.0" }) }
     elsif path.start_with?("/api/v1/rules/") && request.request_method == "GET"
       require_session(request, response) do
         result = @service.rule(path.split("/").last)
@@ -73,6 +74,10 @@ class ReviewerServer
   end
 
   def handle_review(request, response)
+    unless @review_lock.try_lock
+      json(response, 429, ReviewerService.error("busy", "Outra revisão local está em andamento."))
+      return
+    end
     content_length = request.header["content-length"]&.first.to_i
     raise WEBrick::HTTPStatus::RequestEntityTooLarge if content_length > MAX_REQUEST_BYTES
     body = request.body.to_s
@@ -83,6 +88,16 @@ class ReviewerServer
     json(response, status, result)
   rescue JSON::ParserError
     json(response, 400, ReviewerService.error("invalid_json", "A requisição não é um JSON válido."))
+  ensure
+    @review_lock.unlock if @review_lock.owned?
+  end
+
+  def require_local_request(request, response)
+    unless local_request?(request)
+      json(response, 403, ReviewerService.error("forbidden", "Origem local inválida."))
+      return
+    end
+    yield
   end
 
   def require_session(request, response)
@@ -94,17 +109,37 @@ class ReviewerServer
   end
 
   def secure_request?(request)
-    request.header["x-pte-session"]&.first == @service.session_token && allowed_origin?(request)
+    secure_token?(request.header["x-pte-session"]&.first) && local_request?(request)
+  end
+
+  def local_request?(request)
+    allowed_host?(request) && allowed_origin?(request)
+  end
+
+  def allowed_host?(request)
+    %w[127.0.0.1 localhost ::1 [::1]].include?(request.host) && request.port == listening_port
   end
 
   def allowed_origin?(request)
     origin = request.header["origin"]&.first
     return true if origin.nil? || origin.empty?
-    origin == "http://#{request.host}:#{request.port}" || origin == "http://127.0.0.1:#{request.port}" || origin == "http://localhost:#{request.port}"
+
+    ["127.0.0.1", "localhost", "[::1]"].any? { |host| origin == "http://#{host}:#{listening_port}" }
+  end
+
+  def listening_port
+    @server ? @server.config[:Port] : @port
+  end
+
+  def secure_token?(provided)
+    expected = @service.session_token
+    return false unless provided.is_a?(String) && provided.bytesize == expected.bytesize
+
+    provided.bytes.zip(expected.bytes).reduce(0) { |difference, pair| difference | (pair[0] ^ pair[1]) }.zero?
   end
 
   def status_for(code)
-    { "invalid_json" => 400, "invalid_request" => 400, "invalid_document" => 400, "invalid_name" => 400, "unsupported_format" => 415, "converter_unavailable" => 503, "invalid_content" => 400, "invalid_pdf" => 422, "pdf_without_text" => 422, "empty_document" => 400, "document_too_large" => 413, "conversion_timeout" => 408, "conversion_failed" => 422, "invalid_level" => 400, "invalid_locale" => 400, "not_found" => 404 }.fetch(code, 500)
+    { "invalid_json" => 400, "invalid_request" => 400, "invalid_document" => 400, "invalid_name" => 400, "unsupported_format" => 415, "converter_unavailable" => 503, "invalid_content" => 400, "invalid_pdf" => 422, "pdf_without_text" => 422, "empty_document" => 400, "document_too_large" => 413, "conversion_timeout" => 408, "conversion_failed" => 422, "invalid_level" => 400, "invalid_locale" => 400, "not_found" => 404, "busy" => 429 }.fetch(code, 500)
   end
 
   def json(response, status, payload)

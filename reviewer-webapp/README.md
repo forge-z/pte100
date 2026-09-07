@@ -40,7 +40,10 @@ Testes do serviço:
 
 ```sh
 bundle exec ruby -Iserver test/reviewer_webapp_test.rb
+bundle exec ruby -Iserver test/reviewer_server_test.rb
 ```
+
+Na raiz do repositório, `rake verify` executa essas verificações junto com os testes do PTE-Lint e a validação editorial.
 
 ## Resultado esperado
 
@@ -132,8 +135,8 @@ reviewer-webapp/
 │   ├── architecture.md
 │   ├── delivery-plan.md
 │   └── privacy.md
-├── client/                 # SPA TypeScript, criada no marco 1
-├── server/                 # adaptador HTTP local Ruby, criado no marco 1
+├── client/                 # interface estática JavaScript
+├── server/                 # adaptador HTTP local Ruby
 └── test/                   # testes de contrato e ponta a ponta
 ```
 
@@ -157,4 +160,4 @@ Não haverá coleta automática. Durante desenvolvimento e testes, o time deve m
 
 ## Próxima decisão
 
-Antes de implementar, validar um protótipo da tela de revisão com 3 a 5 documentos representativos. O teste deve confirmar se a unidade correta de navegação é o diagnóstico individual, o parágrafo ou a seção. Essa decisão afeta o modelo de contexto da interface, mas não o contrato do motor.
+Validar o fluxo implementado com 3 a 5 documentos representativos. O teste deve confirmar se a unidade correta de navegação é o diagnóstico individual, o parágrafo ou a seção. Essa decisão afeta o modelo de contexto da interface, mas não o contrato do motor.

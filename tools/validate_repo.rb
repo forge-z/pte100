@@ -7,6 +7,14 @@ require "pathname"
 
 ROOT = File.expand_path("..", __dir__)
 errors = []
+EXCLUDED_DIRECTORIES = %w[.git .astro coverage dist node_modules tmp .pte-cache].freeze
+
+def project_markdown_files
+  Dir.glob(File.join(ROOT, "**", "*.md")).sort.reject do |path|
+    relative = path.delete_prefix(ROOT + "/").split(File::SEPARATOR)
+    (relative & EXCLUDED_DIRECTORIES).any?
+  end
+end
 
 rules_path = File.join(ROOT, "rules", "rules.yaml")
 rules_data = YAML.safe_load(File.read(rules_path, encoding: "UTF-8"), permitted_classes: [], aliases: false)
@@ -91,7 +99,7 @@ end
 
 # Verificação simples de destinos Markdown locais. Âncoras internas e URLs não
 # são validadas aqui porque dependem do renderizador ou da rede.
-Dir.glob(File.join(ROOT, "**", "*.md")).sort.each do |path|
+project_markdown_files.each do |path|
   text = File.read(path, encoding: "UTF-8")
   text.scan(/\[[^\]]*\]\(([^)]+)\)/).flatten.each do |target|
     target = target.strip.sub(/\A</, "").sub(/>\z/, "")

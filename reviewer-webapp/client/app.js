@@ -5,7 +5,9 @@ const state = {
   result: null,
   filter: "all",
   token: null,
-  capabilities: null
+  capabilities: null,
+  generation: 0,
+  reviewedFilename: null
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -38,7 +40,10 @@ function formatFor(file) {
 }
 
 async function readFile(file, format) {
-  if (format !== "pdf") return { content: await file.text() };
+  if (format !== "pdf") {
+    const bytes = await file.arrayBuffer();
+    return { content: new TextDecoder("utf-8", { fatal: true }).decode(bytes) };
+  }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   const chunks = [];
@@ -52,6 +57,14 @@ async function readFile(file, format) {
 async function selectFile(file) {
   setUploadError("");
   if (!file) return;
+  resetResults();
+  state.generation += 1;
+  state.file = null;
+  state.content = null;
+  state.format = null;
+  $("#review-button").disabled = true;
+  $("#drop-zone").classList.remove("has-file");
+  $("#selection-note").textContent = "Nenhum documento selecionado.";
   if (!isSupported(file)) {
     const pdfUnavailable = formatFor(file) === "pdf" && !state.capabilities?.formats?.includes("pdf");
     setUploadError(pdfUnavailable ? "O conversor de PDF não está instalado. Execute bundle install e reinicie o revisor." : "Formato não aceito. Escolha um arquivo .md, .markdown, .txt ou .pdf.");
@@ -95,6 +108,8 @@ function setBusy(busy) {
 
 async function reviewDocument() {
   if (!state.file || state.content === null) return;
+  const generation = state.generation;
+  const document = { name: state.file.name, format: state.format, ...state.content };
   setBusy(true);
   setUploadError("");
   try {
@@ -102,21 +117,23 @@ async function reviewDocument() {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-PTE-Session": state.token || "" },
       body: JSON.stringify({
-        document: { name: state.file.name, format: state.format, ...state.content },
+        document,
         configuration: { locale: $("#locale-select").value, level: $("#level-select").value }
       })
     });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error?.message || "O serviço local recusou a revisão.");
+    if (generation !== state.generation) return;
     state.result = payload;
+    state.reviewedFilename = document.name;
     state.filter = "all";
     renderResults();
     $("#results-panel").hidden = false;
     $("#results-panel").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    showToast(error.message || "Falha ao executar a revisão local.");
+    if (generation === state.generation) showToast(error.message || "Falha ao executar a revisão local.");
   } finally {
-    setBusy(false);
+    if (generation === state.generation) setBusy(false);
   }
 }
 
@@ -131,7 +148,7 @@ function renderResults() {
   $("#filter-error-count").textContent = summary.errors;
   $("#filter-warning-count").textContent = summary.warnings;
   $("#filter-info-count").textContent = summary.info;
-  $("#result-filename").textContent = state.file.name;
+  $("#result-filename").textContent = state.reviewedFilename;
   const sourceMeta = state.format === "pdf" ? "PDF convertido localmente · " : "";
   $("#result-file-meta").textContent = `${sourceMeta}${result.configuration.level} · ${result.configuration.locale}`;
   $$(".filter-button").forEach((button) => button.classList.toggle("active", button.dataset.filter === state.filter));
@@ -173,14 +190,16 @@ function exportResult() {
   const blob = new Blob([JSON.stringify(state.result, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = `${state.file.name.replace(/\.[^.]+$/, "") || "revisao"}.pte-report.json`;
+  link.download = `${state.reviewedFilename.replace(/\.[^.]+$/, "") || "revisao"}.pte-report.json`;
   link.click();
   URL.revokeObjectURL(link.href);
   showToast("Relatório JSON exportado.");
 }
 
 function clearDocument() {
-  state.file = null; state.content = null; state.format = null; state.result = null;
+  state.generation += 1;
+  state.file = null; state.content = null; state.format = null;
+  resetResults();
   $("#file-input").value = "";
   $("#selection-note").textContent = "Nenhum documento selecionado.";
   $("#review-button").disabled = true;
@@ -188,6 +207,17 @@ function clearDocument() {
   setUploadError("");
   $(".hero").scrollIntoView({ behavior: "smooth", block: "start" });
   showToast("Documento removido da sessão.");
+}
+
+function resetResults() {
+  state.result = null;
+  state.reviewedFilename = null;
+  $("#results-panel").hidden = true;
+  $("#diagnostics-list").replaceChildren();
+  $("#empty-results").hidden = true;
+  ["#total-count", "#error-count", "#warning-count", "#info-count", "#filter-all-count", "#filter-error-count", "#filter-warning-count", "#filter-info-count"].forEach((selector) => { $(selector).textContent = "0"; });
+  $("#result-filename").textContent = "";
+  $("#result-file-meta").textContent = "";
 }
 
 async function boot() {

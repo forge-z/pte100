@@ -24,6 +24,8 @@ Uma coleção é conforme quando:
 - registra versão exata de regras e vocabulários;
 - mantém relatório reproduzível.
 
+Na proposta 0.1, as regras ainda têm estado `experimental`. Portanto, o resultado deve ser declarado como **piloto** e não como certificação ou conformidade estável. Diagnósticos `error` experimentais devem ser resolvidos ou registrados como desvio; o PTE-Lint não substitui essa decisão editorial.
+
 `warning` não impede conformidade, mas deve ser resolvido ou justificado para conteúdo crítico. `info` é orientação.
 
 ## Escopo e amostragem
@@ -50,4 +52,3 @@ assessed_at: 2026-08-06T15:00:00-03:00
 ```
 
 O PTE-100 v0.1 não autoriza certificadores nem selo oficial. Declarações são autodeclaradas e devem apontar para a evidência.
-

@@ -73,9 +73,8 @@ Critérios de saída:
 Ordem sugerida:
 
 1. DOCX sem macro;
-2. PDF com camada de texto;
-3. AsciiDoc e HTML;
-4. OCR local, opcional e separado.
+2. AsciiDoc e HTML;
+3. OCR local, opcional e separado.
 
 Cada adaptador precisa preservar origem suficiente para mostrar página, bloco ou seção. Arquivos externos, macros, links ativos e recursos incorporados não são executados ou buscados.
 
