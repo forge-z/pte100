@@ -113,9 +113,9 @@ filtrar / explicar regra / copiar sugestão / exportar JSON
 - Markdown e texto simples em UTF-8, além de PDF com camada de texto;
 - regras automáticas já suportadas pelo PTE-Lint;
 - execução offline depois da instalação;
-- diagnóstico conforme o schema público;
+- diagnóstico no formato público; a validação formal das respostas contra JSON Schema continua pendente;
 - estados de carregamento, arquivo inválido, falha do motor e nenhum achado;
-- layout responsivo e navegação completa por teclado;
+- layout responsivo e controles de teclado; a validação do fluxo completo de acessibilidade continua pendente;
 - exportação de relatório JSON, iniciada explicitamente pela pessoa usuária.
 
 ### Fora do MVP
@@ -128,7 +128,7 @@ filtrar / explicar regra / copiar sugestão / exportar JSON
 - certificação de conformidade ou de segurança técnica;
 - múltiplos arquivos e comparação entre versões.
 
-## Estrutura planejada
+## Estrutura atual
 
 ```text
 reviewer-webapp/
@@ -139,7 +139,7 @@ reviewer-webapp/
 │   └── privacy.md
 ├── client/                 # interface estática JavaScript
 ├── server/                 # adaptador HTTP local Ruby
-└── test/                   # testes de contrato e ponta a ponta
+└── test/                   # testes do serviço e despacho de requisições
 ```
 
 O MVP executável está em `client/`, `server/` e `bin/`. O diretório continua separado do site institucional; o webapp não é uma segunda fonte das regras normativas.
