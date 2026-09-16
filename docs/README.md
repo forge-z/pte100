@@ -12,5 +12,6 @@
 - [Especificação PTE-Lint](pte-lint.md)
 - [Plano de ferramentas](tooling-plan.md)
 - [Política de localidades](locales.md)
+- [Auditoria histórica de 7 de setembro de 2026](audits/2026-09-07-improvement-review.md)
 
 Documentos em `docs/` explicam a norma e seu ecossistema. Em caso de conflito normativo, prevalecem a versão publicada em `spec/`, o catálogo de regras e a ordem declarada na especificação.

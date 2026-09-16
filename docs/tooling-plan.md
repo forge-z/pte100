@@ -1,5 +1,7 @@
 # Plano de ferramentas
 
+Este documento descreve a arquitetura pretendida. O estado implementado está no [README](../README.md) e as metas restantes no [ROADMAP](../ROADMAP.md). CLI e reviewer local já existem; LSP, extensão VS Code, MCP e API REST pública continuam planejados.
+
 ## Estratégia
 
 Um núcleo compartilhado evita cinco implementações divergentes. A opção sustentável é um motor portátil com API de biblioteca e protocolo LSP; CLI, extensão, MCP e serviço REST são adaptadores finos.
@@ -10,7 +12,7 @@ Um núcleo compartilhado evita cinco implementações divergentes. A opção sus
 
 **Segundo marco:** análise morfossintática local e regras assistidas, com métricas por localidade. O motor deve permitir substituir o analisador linguístico sem mudar diagnósticos públicos.
 
-**Terceiro marco:** adaptadores AsciiDoc e HTML, cache incremental, SARIF e API de plugin isolada.
+**Terceiro marco:** adaptadores AsciiDoc e HTML, cache incremental e API de plugin isolada. A saída SARIF já está disponível na CLI do MVP.
 
 ## Extensão VS Code
 
@@ -73,4 +75,3 @@ Construir a API antes do motor local criaria dependência de serviço e risco de
 ## Repositórios futuros
 
 Enquanto a API ainda muda, tudo permanece neste monorepositório. Depois da primeira versão estável, artefatos com ciclos independentes podem migrar para `pte-lint`, `pte-vscode` e `pte-mcp`, mantendo schemas em `pte-spec`. A migração só ocorrerá quando reduzir, e não aumentar, custo de contribuição.
-
