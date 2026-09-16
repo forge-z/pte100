@@ -1,0 +1,71 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/reviewer-webapp/Gemfile
+      BUNDLE_FROZEN: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler: "2.6.9"
+          bundler-cache: true
+
+      - name: Verify tests and editorial data
+        run: bundle exec rake verify
+
+      - name: Check generated artifacts
+        run: |
+          ruby tools/generate_catalog.rb
+          ruby tools/generate_corpus.rb
+          git diff --exit-code
+
+      - name: Check procedure example
+        run: |
+          mkdir -p tmp
+          bundle exec ruby bin/pte-lint check examples/procedure-pte.md --format json > tmp/dogfood-procedure.json
+          ruby -rjson -e 'summary = JSON.parse(File.read("tmp/dogfood-procedure.json")).fetch("summary"); abort "Procedure example must have one file, zero errors and zero warnings: #{summary}" unless summary.fetch("files") == 1 && summary.fetch("errors").zero? && summary.fetch("warnings").zero?'
+
+  website:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ASTRO_TELEMETRY_DISABLED: "1"
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build

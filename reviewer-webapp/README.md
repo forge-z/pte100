@@ -8,12 +8,13 @@ O produto recebe um documento, executa o PTE-Lint no computador da pessoa usuár
 
 ## Instalar e iniciar
 
-O revisor requer Ruby 2.6 ou mais recente. As dependências são Ruby puro, sem binários específicos de sistema operacional.
+O revisor usa Ruby 3.3.x (referência de CI: 3.3.12) e Bundler 2.6.9. As dependências são Ruby puro. A CI cobre Linux; os comandos para macOS e Windows não representam uma garantia de instalação em todas as versões desses sistemas.
 
 ### macOS e Linux
 
 ```sh
 cd reviewer-webapp
+gem install bundler -v 2.6.9
 bundle install
 bundle exec ruby bin/reviewer-webapp
 ```
@@ -24,6 +25,7 @@ Instale o Ruby com o [RubyInstaller](https://rubyinstaller.org/) e execute:
 
 ```powershell
 cd reviewer-webapp
+gem install bundler -v 2.6.9
 bundle install
 bundle exec ruby bin/reviewer-webapp
 ```
@@ -43,7 +45,7 @@ bundle exec ruby -Iserver test/reviewer_webapp_test.rb
 bundle exec ruby -Iserver test/reviewer_server_test.rb
 ```
 
-Na raiz do repositório, `rake verify` executa essas verificações junto com os testes do PTE-Lint e a validação editorial.
+Na raiz do repositório, `BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle exec rake verify` executa essas verificações junto com os testes do PTE-Lint e a validação editorial. Consulte [tools/README.md](../tools/README.md) para preparar as dependências e reproduzir os demais checks da CI.
 
 ## Resultado esperado
 
