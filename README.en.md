@@ -2,6 +2,8 @@
 
 [Versão principal em português](README.md) · [Public website](https://forge-z.github.io/pte100/)
 
+[![Verify](https://github.com/forge-z/pte100/actions/workflows/verify.yml/badge.svg)](https://github.com/forge-z/pte100/actions/workflows/verify.yml)
+
 PTE-100 is an open, Portuguese-first controlled technical language proposal designed to make technical documentation clearer, more consistent and easier to process by people, translation workflows, linters, search systems and AI agents.
 
 PTE-100 is not a translation, official adaptation, or implementation of ASD-STE100. It defines its own identity, rules, conformance model, machine-readable contracts, and open governance.

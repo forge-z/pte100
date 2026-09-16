@@ -5,6 +5,7 @@
 [![Status: proposta v0.1](https://img.shields.io/badge/status-proposta%20v0.1-f5a623)](spec/PTE-100-v0.1.md)
 [![Licença: Apache-2.0](https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue)](LICENSE)
 [![Idioma: português](https://img.shields.io/badge/idioma-portugu%C3%AAs-009c3b)](docs/architecture.md)
+[![Verify](https://github.com/forge-z/pte100/actions/workflows/verify.yml/badge.svg)](https://github.com/forge-z/pte100/actions/workflows/verify.yml)
 
 O PTE-100 é uma proposta aberta de linguagem técnica controlada, criada em português para tornar a documentação mais clara, consistente e fácil de processar por pessoas, fluxos de tradução, linters, sistemas de busca e agentes de IA.
 
