@@ -4,6 +4,8 @@
 
 O Marco 1 foi implementado nesta pasta: cliente estático, serviço Ruby em loopback, integração com `PteLint::Runner`, contrato de revisão, filtros, exportação JSON, controles de sessão/origem e testes automatizados do serviço. O conversor local de PDF com camada de texto também foi antecipado, usando a mesma implementação Ruby pura em macOS e Windows. OCR e empacotamento desktop permanecem para etapas posteriores.
 
+Isso descreve a implementação, não o cumprimento de todos os critérios de aceite abaixo. A suíte atual cobre o serviço e o despacho de requisições com objetos simulados. Continuam pendentes a validação das respostas contra JSON Schema, a paridade integral CLI/HTTP, a inspeção de rede no fluxo completo, a avaliação por teclado e a instalação limpa em Windows. Os marcos e o backlog abaixo são metas; consulte o [roteiro atual](../../ROADMAP.md) para a distinção entre entregas e validações pendentes.
+
 ## Princípio de sequência
 
 Primeiro validar utilidade e paridade com o motor existente; depois ampliar formatos e inteligência local. Cada marco termina com um incremento demonstrável e critérios de saída objetivos.

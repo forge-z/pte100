@@ -8,7 +8,7 @@ version: "0.1"
 date-released: 2026-08-06
 license: Apache-2.0
 repository-code: "https://github.com/forge-z/pte100"
-abstract: "Padrão aberto de escrita técnica controlada em português para pessoas, tradução e agentes de IA."
+abstract: "Proposta pública experimental de escrita técnica controlada em português para pessoas, tradução e agentes de IA."
 keywords:
   - controlled-language
   - technical-writing
