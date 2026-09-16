@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Perguntas gerais e discussões
+    url: https://github.com/forge-z/pte100/discussions
+    about: Use Discussions para dúvidas de uso e conversas gerais sobre o PTE-100.

@@ -1,0 +1,98 @@
+name: Propor ou alterar uma regra
+description: Proposta fundamentada de regra, esclarecimento ou mudança normativa.
+title: "[Proposta] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Siga [CONTRIBUTING.md](https://github.com/forge-z/pte100/blob/main/CONTRIBUTING.md) e [GOVERNANCE.md](https://github.com/forge-z/pte100/blob/main/GOVERNANCE.md).
+        Use um identificador provisório P-AAAA-NNN. Os códigos definitivos Rxxx são atribuídos pelos mantenedores e não são reutilizados.
+        Anonimize casos reais e declare vínculos financeiros ou organizacionais relevantes. Este formulário não substitui o processo de governança.
+  - type: input
+    id: proposal_id
+    attributes:
+      label: Identificador provisório
+      placeholder: P-AAAA-NNN
+    validations:
+      required: true
+  - type: input
+    id: title_category
+    attributes:
+      label: Título e categoria
+      description: Se alterar uma regra existente, mencione também seu código.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema observado
+      description: Descreva o problema verificável e o corpus ou casos anonimizados que o demonstram.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Público afetado
+      description: Autores, leitores, tradutores, ferramentas ou outros públicos e domínios envolvidos.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Regra ou alteração proposta e justificativa
+      description: Proponha a redação e explique por que ela resolve o problema. Separe preferência estilística de requisito verificável.
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Exemplos incorreto e correto
+      description: Inclua os dois exemplos, anonimizados, e explique a diferença.
+      value: |
+        Incorreto:
+
+        Correto:
+
+        Diferença:
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Limites e exceções
+      description: Quando a proposta não se aplica? Há restrições de domínio ou contexto?
+    validations:
+      required: true
+  - type: input
+    id: severity
+    attributes:
+      label: Severidade sugerida
+      description: Sugira a severidade e justifique; a sugestão não altera a regra vigente.
+    validations:
+      required: true
+  - type: textarea
+    id: false_positives
+    attributes:
+      label: Risco de falso positivo
+      description: Quais textos aceitáveis poderiam ser sinalizados e como reduzir esse risco?
+    validations:
+      required: true
+  - type: textarea
+    id: detection
+    attributes:
+      label: Viabilidade de detecção
+      description: Explique se a verificação seria automática, humana ou combinada, com limitações e exemplos.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibilidade e estratégia de migração
+      description: Descreva o impacto em documentos, autores, tradutores e ferramentas, incluindo incompatibilidades e como migrar. Se não houver impacto, explique.
+    validations:
+      required: true
+  - type: textarea
+    id: interests
+    attributes:
+      label: Vínculos e interesses relevantes
+      description: Declare vínculos financeiros ou organizacionais relacionados à proposta, se houver.
