@@ -1,0 +1,63 @@
+name: Relatar um problema de ferramenta
+description: Falha no PTE-Lint, reviewer local, tooling ou schemas.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Procure uma issue existente antes de abrir outra. Envie apenas exemplos mínimos e anonimizados, sem conteúdo confidencial.
+        Para mudanças nas regras, use o formulário de proposta de regra.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente afetado
+      options:
+        - PTE-Lint / CLI
+        - Reviewer local
+        - Tooling / corpus
+        - Schemas
+        - Outro
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versão ou commit
+      description: Informe a tag ou o resultado de git rev-parse HEAD.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Sistema operacional, versão do Ruby e, quando aplicável, Bundler, Node e navegador.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Comando ou ação executada
+      description: Inclua opções e configuração relevantes; no reviewer, descreva a ação na interface.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reprodução mínima
+      description: Passos, entrada mínima anonimizada e configuração necessária para reproduzir.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado observado
+      description: Inclua a saída, mensagem de erro ou diagnóstico relevante, sem segredos.
+    validations:
+      required: true

@@ -1,0 +1,68 @@
+name: Compartilhar feedback de avaliação ou piloto
+description: Observações de uso experimental do PTE-100 em documentos.
+title: "[Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Não envie conteúdo confidencial. Anonimize exemplos proprietários e remova dados pessoais, segredos e identificadores antes de publicar.
+        Descreva apenas o que foi observado; não é necessário identificar pessoas ou organizações.
+  - type: input
+    id: domain
+    attributes:
+      label: Domínio
+      description: Por exemplo, manutenção mecânica, software ou operação industrial.
+    validations:
+      required: true
+  - type: input
+    id: document_type
+    attributes:
+      label: Tipo de documento
+      description: Por exemplo, procedimento, manual, instrução de trabalho ou documentação de API.
+    validations:
+      required: true
+  - type: input
+    id: size
+    attributes:
+      label: Tamanho aproximado
+      description: Quantidade de documentos, páginas ou palavras; estimativas são suficientes.
+    validations:
+      required: true
+  - type: textarea
+    id: profile
+    attributes:
+      label: Perfil e nível usados
+      description: Informe o perfil e nível de conformidade avaliados, se aplicável; inclua a experiência dos participantes com redação técnica, sem identificá-los.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versão ou commit avaliado
+      description: Informe quando disponível; indique se a avaliação foi manual, com PTE-Lint ou com o reviewer.
+  - type: textarea
+    id: useful_rules
+    attributes:
+      label: Regras úteis
+      description: Quais regras ajudaram? Use códigos Rxxx e exemplos anonimizados quando possível.
+    validations:
+      required: true
+  - type: textarea
+    id: false_positives
+    attributes:
+      label: Falsos positivos
+      description: Textos aceitáveis sinalizados indevidamente. Inclua regra, exemplo e justificativa, ou informe que nenhum foi observado.
+    validations:
+      required: true
+  - type: textarea
+    id: false_negatives
+    attributes:
+      label: Suspeitas de falsos negativos
+      description: Problemas que deveriam ter sido identificados e não foram. Inclua regra e exemplo, ou informe que nenhum foi observado.
+    validations:
+      required: true
+  - type: textarea
+    id: observations
+    attributes:
+      label: Observações adicionais
+      description: Dificuldades, limites do contexto avaliado e sugestões, sem extrapolar os resultados observados.

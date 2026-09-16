@@ -5,22 +5,30 @@
 [![Status: proposta v0.1](https://img.shields.io/badge/status-proposta%20v0.1-f5a623)](spec/PTE-100-v0.1.md)
 [![Licença: Apache-2.0](https://img.shields.io/badge/licen%C3%A7a-Apache--2.0-blue)](LICENSE)
 [![Idioma: português](https://img.shields.io/badge/idioma-portugu%C3%AAs-009c3b)](docs/architecture.md)
+[![Verify](https://github.com/forge-z/pte100/actions/workflows/verify.yml/badge.svg)](https://github.com/forge-z/pte100/actions/workflows/verify.yml)
 
-O PTE-100 é um padrão aberto e original para escrever documentação técnica em português com menos ambiguidade, mais consistência e melhor processamento por pessoas, tradutores e agentes de IA.
+O PTE-100 é uma proposta aberta de linguagem técnica controlada, criada em português para tornar a documentação mais clara, consistente e fácil de processar por pessoas, fluxos de tradução, linters, sistemas de busca e agentes de IA.
 
 O projeto não é uma tradução, adaptação oficial nem implementação do ASD-STE100. O PTE-100 parte de problemas universais da comunicação técnica, mas define identidade, regras, taxonomia, modelo de conformidade e arquitetura de ferramentas próprios.
 
-> **Estado do projeto:** a versão 0.1 é uma proposta pública. Use-a em pilotos e envie evidências. Não a trate ainda como padrão estável.
+> **Estado do projeto:** a versão 0.1 é uma proposta pública experimental, não um padrão estável ou certificado. Português é o idioma normativo; o [README em inglês](README.en.md) é informativo.
 
-## O que está incluído
+## Por que existe
+
+Variação terminológica, frases excessivamente complexas, condições implícitas e estruturas inconsistentes podem dificultar a leitura e acrescentar trabalho à tradução, busca, linting e recuperação por IA. O PTE-100 propõe regras explícitas, vocabulário controlado e estruturas documentais previsíveis para enfrentar esses problemas. Essa é a motivação do projeto, não uma afirmação de eficácia validada por pesquisa ou adoção externa.
+
+## O que já funciona
 
 - [Especificação PTE-100 v0.1](spec/PTE-100-v0.1.md), com escopo, linguagem normativa e conformidade;
-- [50 regras iniciais](rules/catalog.md), também disponíveis como [dados YAML](rules/rules.yaml);
-- [vocabulário controlado](vocabulary/README.md) com um núcleo inicial legível por máquina;
+- [50 regras experimentais](rules/catalog.md), também disponíveis como [dados YAML](rules/rules.yaml);
+- [vocabulário controlado](vocabulary/README.md) e [JSON Schemas](schemas/) públicos;
+- [PTE-Lint offline](docs/pte-lint.md), com 21 regras automáticas, entrada Markdown/texto e saída `text`, JSON ou SARIF;
+- [revisor local](reviewer-webapp/README.md) para Markdown, texto simples e PDF com camada de texto;
 - [exemplos antes/depois](examples/before-after.md) e um [procedimento completo](examples/procedure-pte.md);
-- [corpus externo de testes](docs/corpus-sources.md), com manifesto, snapshots e ingestão reproduzível;
-- contratos para [PTE-Lint](docs/pte-lint.md), CLI, extensão VS Code, MCP Server e API REST;
-- governança, processo de contribuição e roteiro público.
+- [corpus sintético de regressão](corpus/README.md), com 42 fixtures, e ferramentas de [ingestão explícita de fontes externas](docs/corpus-sources.md);
+- [governança](GOVERNANCE.md), [processo de contribuição](CONTRIBUTING.md) e [roteiro público](ROADMAP.md).
+
+As outras 29 regras têm modo `assisted` especificado, mas ainda não são verificadas pelo motor. As fixtures sintéticas não medem precisão linguística. O lint auxilia a revisão: não certifica segurança, correção técnica, conformidade estável ou cumprimento de requisitos legais.
 
 ## Exemplo rápido
 
@@ -36,20 +44,48 @@ Depois:
 
 O texto revisado usa ações diretas, uma condição explícita, termos consistentes e passos verificáveis.
 
-## Comece por aqui
+## Quick Start
 
-1. Leia os [princípios de projeto](docs/design-principles.md).
-2. Consulte a [arquitetura da norma](docs/architecture.md).
-3. Selecione um nível de [conformidade](docs/conformance.md).
-4. Adote o arquivo [`pte-lint.example.yaml`](pte-lint.example.yaml) no projeto piloto.
-5. Registre falsos positivos, exceções e métricas antes/depois.
-
-Para experimentar o MVP localmente:
+Pré-requisitos: Git e **Ruby 3.3.x** (versão de referência: **3.3.12**). O MVP é usado a partir do clone do repositório; ainda não é distribuído como pacote instalável. A CLI usa apenas a biblioteca padrão do Ruby, sem instalação de gems ou Node.js.
 
 ```sh
-bin/pte-lint check examples/procedure-pte.md --format text
-bin/pte-lint check corpus/fixtures/positive/R040.md --format json
+git clone https://github.com/forge-z/pte100.git
+cd pte100
+ruby bin/pte-lint check examples/procedure-pte.md --format text
 ```
+
+Resultado esperado:
+
+```text
+1 arquivo(s), 0 erro(s), 0 aviso(s)
+```
+
+Para obter o mesmo resultado em JSON:
+
+```sh
+ruby bin/pte-lint check examples/procedure-pte.md --format json
+```
+
+Substitua o caminho pelo seu arquivo Markdown ou texto. Consulte a [documentação do PTE-Lint](docs/pte-lint.md) para configuração, formatos de saída e códigos de retorno. Para revisar no navegador, siga a [instalação do revisor local](reviewer-webapp/README.md), que requer gems adicionais.
+
+### Executar os testes
+
+A suíte completa usa **Bundler 2.6.9** e as dependências do revisor. Na raiz do clone:
+
+```sh
+gem install bundler -v 2.6.9
+BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle install
+BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle exec rake verify
+```
+
+`rake verify` executa testes do motor, CLI, consistência, corpus e revisor, além da validação editorial. O clone e a instalação de dependências precisam de rede; os testes não baixam corpus externo. Veja os comandos de geração e manutenção em [tools/README.md](tools/README.md). O [website](website/README.md) tem build separado com Node.js 22.
+
+### Avaliar a proposta em um piloto
+
+1. Leia os [princípios de projeto](docs/design-principles.md) e a [arquitetura da norma](docs/architecture.md).
+2. Selecione um nível de [conformidade](docs/conformance.md).
+3. Use [`pte-lint.example.yaml`](pte-lint.example.yaml) como base da configuração do piloto.
+4. Registre falsos positivos, exceções e evidências antes/depois, com revisão humana.
 
 ## Arquitetura do ecossistema
 
@@ -83,15 +119,18 @@ bin/pte-lint check corpus/fixtures/positive/R040.md --format json
 ├── corpus/               # fixtures, manifesto e snapshots do corpus externo
 ├── bin/                  # CLI pte-lint (MVP offline)
 ├── lib/                  # motor Ruby compartilhado (MVP offline)
+├── reviewer-webapp/      # revisor local e seus testes
 ├── rules/                # catálogo humano e fonte YAML das regras
 ├── schemas/              # JSON Schemas públicos
 ├── spec/                 # versões publicadas da especificação
 ├── vocabulary/           # vocabulário controlado e seu schema
+├── AGENTS.md
 ├── CHANGELOG.md
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
 ├── GOVERNANCE.md
 ├── LICENSE
+├── MAINTAINERS.md
 ├── NOTICE
 ├── ROADMAP.md
 └── SECURITY.md
@@ -99,7 +138,9 @@ bin/pte-lint check corpus/fixtures/positive/R040.md --format json
 
 ## Participação
 
-Contribuições são bem-vindas em português. Propostas de regra devem seguir o processo descrito em [CONTRIBUTING.md](CONTRIBUTING.md). Questões de conduta seguem o [Código de Conduta](CODE_OF_CONDUCT.md); decisões e papéis seguem a [Governança](GOVERNANCE.md).
+Contribuições são bem-vindas em qualquer variedade do português. Use [Issues](https://github.com/forge-z/pte100/issues/new/choose) para bugs, propostas de regra e feedback de pilotos; perguntas gerais podem ir para [Discussions](https://github.com/forge-z/pte100/discussions). Anonimize exemplos e não publique conteúdo confidencial.
+
+Antes de alterar regras ou contratos, siga [CONTRIBUTING.md](CONTRIBUTING.md) e [GOVERNANCE.md](GOVERNANCE.md). Consulte os [mantenedores atuais](MAINTAINERS.md), o [Código de Conduta](CODE_OF_CONDUCT.md) e as [instruções operacionais para agentes](AGENTS.md).
 
 ## Licença e atribuição
 

@@ -10,6 +10,7 @@ GEM
       afm (>= 0.2.1, < 2)
       hashery (~> 2.0)
       ttfunk
+    rake (13.4.2)
     ttfunk (1.7.0)
     webrick (1.9.2)
 
@@ -20,7 +21,11 @@ PLATFORMS
 DEPENDENCIES
   minitest (~> 5.0)
   pdf-reader (~> 2.15)
+  rake (~> 13.3)
   webrick (~> 1.9)
 
+RUBY VERSION
+   ruby 3.3.12p206
+
 BUNDLED WITH
-   1.17.2
+   2.6.9
