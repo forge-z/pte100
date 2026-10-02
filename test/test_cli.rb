@@ -31,4 +31,18 @@ class PteLintCliTest < Minitest::Test
 
     assert_equal 3, status.exitstatus
   end
+  def test_missing_input_with_explicit_config_remains_an_input_error
+    Tempfile.create(["pte-lint", ".yaml"]) do |config|
+      config.write("level: pte-claro\nlocale: pt-BR\n")
+      config.flush
+      output, status = Open3.capture2e(RbConfig.ruby, CLI, "check", File.join(ROOT, "missing.md"), "--config", config.path)
+      assert_equal 3, status.exitstatus, output
+    end
+  end
+
+  def test_missing_explicit_configuration_returns_configuration_error
+    output, status = Open3.capture2e(RbConfig.ruby, CLI, "check", "--config", File.join(ROOT, "missing.yaml"), stdin_data: "Use XYZ.")
+    assert_equal 2, status.exitstatus, output
+  end
+
 end

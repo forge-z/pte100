@@ -26,3 +26,7 @@ O site é estático. O conteúdo normativo continua nos diretórios `spec/`, `ru
 ## Publicação
 
 O [workflow de deploy](../.github/workflows/deploy-website.yml) executa o build e publica `website/dist` no GitHub Pages em pushes para `main` que alterem `website/**`, `schemas/**`, `rules/catalog.md` ou o próprio workflow. Ele também pode ser acionado manualmente. O [workflow de verificação](../.github/workflows/verify.yml) faz o build em pull requests sem publicar o site.
+
+## Downloads e tutorial
+
+O build valida snapshots e gera `dist/downloads/pte100-skills.zip` e `.zip.sha256` com [tools/build-skills.mjs](../tools/build-skills.mjs), sem instalar dependências novas. O tutorial está em `/pte100/revisor-local/`, com exemplo sintético para download. O pack e o tutorial só chegam ao site público após merge/publicação. Confira o [guia do pack](../agent-skills/README.md) para atualizar snapshots e reproduzir os testes. Mudanças nas fontes e no pack também acionam o deploy; PRs só verificam o build.

@@ -1,3 +1,4 @@
+import { buildPack } from '../../tools/build-skills.mjs';
 import { cp, mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
@@ -10,3 +11,6 @@ await mkdir(resolve(dist, 'schemas'), { recursive: true });
 await mkdir(resolve(dist, 'rules'), { recursive: true });
 await cp(resolve(root, 'schemas'), resolve(dist, 'schemas'), { recursive: true });
 await cp(resolve(root, 'rules/catalog.md'), resolve(dist, 'rules/catalog.md'));
+
+await buildPack(resolve(dist, 'downloads'));
+await cp(resolve(root, 'examples/reviewer-demo.md'), resolve(dist, 'downloads/revisor-exemplo.md'));

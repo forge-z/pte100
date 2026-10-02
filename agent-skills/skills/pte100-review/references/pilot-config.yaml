@@ -1,0 +1,4 @@
+# Base informativa: ajuste somente ao escopo declarado pelo autor.
+level: pte-claro
+locale: pt-BR
+fail_on: error

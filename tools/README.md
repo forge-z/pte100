@@ -11,7 +11,7 @@ bundle install
 bundle exec rake verify
 ```
 
-`bundle exec rake verify` executa os testes do motor, CLI, consistência, manifesto e ingestão do corpus, as duas suítes do revisor local e a validação editorial. `validate_repo.rb` verifica quantidade, ordem, unicidade, campos obrigatórios, YAML e sintaxe dos arquivos JSON Schema. Não valida instâncias contra esses schemas e não percorre dependências ou saídas de build.
+`bundle exec rake verify` executa os testes do motor, CLI, consistência, manifesto e ingestão do corpus, as suítes do serviço, rotas e HTTP end-to-end do revisor local e a validação editorial. `validate_repo.rb` verifica quantidade, ordem, unicidade, campos obrigatórios, YAML e sintaxe dos arquivos JSON Schema. Não valida instâncias contra esses schemas e não percorre dependências ou saídas de build.
 
 Para atualizar e conferir os artefatos gerados:
 

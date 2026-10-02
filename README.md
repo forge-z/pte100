@@ -23,6 +23,7 @@ Variação terminológica, frases excessivamente complexas, condições implíci
 - [50 regras experimentais](rules/catalog.md), também disponíveis como [dados YAML](rules/rules.yaml);
 - [vocabulário controlado](vocabulary/README.md) e [JSON Schemas](schemas/) públicos;
 - [PTE-Lint offline](docs/pte-lint.md), com 21 regras automáticas, entrada Markdown/texto e saída `text`, JSON ou SARIF;
+- [pack de skills para agentes](agent-skills/README.md), com revisão documental, avaliação de piloto e download no site;
 - [revisor local](reviewer-webapp/README.md) para Markdown, texto simples e PDF com camada de texto;
 - [exemplos antes/depois](examples/before-after.md) e um [procedimento completo](examples/procedure-pte.md);
 - [corpus sintético de regressão](corpus/README.md), com 42 fixtures, e ferramentas de [ingestão explícita de fontes externas](docs/corpus-sources.md);
