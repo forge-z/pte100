@@ -80,3 +80,7 @@ Follow [CONTRIBUTING.md](CONTRIBUTING.md) and [GOVERNANCE.md](GOVERNANCE.md) bef
 ## License
 
 Code, schemas, rules, examples and documentation are licensed under [Apache-2.0](LICENSE). See also [NOTICE](NOTICE).
+
+## Agent skills
+
+The [portable skills pack](agent-skills/README.md) includes document review and pilot evidence assessment, canonical PTE-100 sources and an optional offline Ruby linter. Download it from the [public site](https://forge-z.github.io/pte100/#skills) after publication. Local files do not make a remote AI model offline; follow your provider policy or use a configured local runtime for confidential documents. The pack does not certify safety or conformance.

@@ -9,6 +9,7 @@ task :reviewer do
   Dir.chdir("reviewer-webapp") do
     abort "Testes do revisor falharam" unless system("bundle", "exec", RbConfig.ruby, "-Iserver", "test/reviewer_webapp_test.rb")
     abort "Testes HTTP do revisor falharam" unless system("bundle", "exec", RbConfig.ruby, "-Iserver", "test/reviewer_server_test.rb")
+    abort "Teste end-to-end do revisor falhou" unless system("bundle", "exec", RbConfig.ruby, "test/reviewer_e2e_test.rb")
   end
 end
 

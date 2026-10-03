@@ -67,5 +67,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Ruby for portable lint smoke test
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.12"
+
+      - name: Test portable skills pack
+        run: node --test ../test/test_skills_pack.mjs
+
       - name: Build website
         run: npm run build

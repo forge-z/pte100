@@ -116,4 +116,33 @@ class PteLintFixturesTest < Minitest::Test
     assert_includes generic.map { |d| d.fetch("rule") }, "R004"
     refute_includes engine.check_text("Use colocar neste contexto.", "mdn.html#u2", context: {"source_id" => "mdn-html-ptbr"}).map { |d| d.fetch("rule") }, "R001"
   end
+  def test_fenced_literals_do_not_emit_language_diagnostics
+    ["```", "~~~~"].each do |fence|
+      text = "#{fence}text\n1. O operador deverá efetuar a verificação de XYZ.\nIMPORTANTE: Faça isso se necessário.\n#{fence}\n"
+      assert_empty @engine.check_text(text, "literal.md"), fence
+    end
+  end
+
+  def test_unclosed_fence_is_literal_to_end_of_file
+    assert_empty @engine.check_text("```text\nUse XYZ. Faça isso se necessário.\n", "incomplete.md")
+  end
+
+  def test_literals_preserve_positions_of_following_prose
+    text = "~~~text\nUse XYZ.\n~~~\nUse XYZ.\n"
+    diagnostic = @engine.check_text(text, "positions.md").find { |d| d["rule"] == "R004" }
+    assert_equal 4, diagnostic.dig("range", "start", "line")
+    assert_equal text.index("XYZ", text.index("~~~", 4)).then { |offset| text[0...offset].bytesize }, diagnostic.dig("range", "start", "offset")
+  end
+
+  def test_valid_unit_symbols_are_not_reported_as_malformed
+    diagnostics = @engine.check_text("Use pressão de 20 kPa e massa de 2 kg.", "units.md")
+    refute_includes diagnostics.map { |d| d["rule"] }, "R039"
+  end
+
+  def test_malformed_units_after_valid_symbol_have_unique_diagnostics
+    diagnostics = @engine.check_text("Pressões: 20\u00a0kPa, 30\u00a0KPA e 40\u00a0kpa.", "units.md").select { |d| d["rule"] == "R039" }
+    assert_equal ["30\u00a0KPA", "40\u00a0kpa"], diagnostics.map { |d| d["evidence"] }
+    assert_equal 2, diagnostics.map { |d| d["fingerprint"] }.uniq.length
+  end
+
 end

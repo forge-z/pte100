@@ -5,8 +5,19 @@ on:
     branches: [main]
     paths:
       - "website/**"
+      - "agent-skills/**"
+      - "tools/build-skills.mjs"
+      - "bin/pte-lint"
+      - "lib/pte_lint.rb"
+      - "spec/**"
+      - "docs/**"
+      - "vocabulary/**"
+      - "examples/**"
+      - "LICENSE"
+      - "NOTICE"
+      - "ROADMAP.md"
       - "schemas/**"
-      - "rules/catalog.md"
+      - "rules/**"
       - ".github/workflows/deploy-website.yml"
   workflow_dispatch:
 

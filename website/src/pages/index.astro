@@ -67,6 +67,7 @@ const ruleGroups = [
         <a href="#por-que">Por que</a>
         <a href="#estrutura">Estrutura</a>
         <a href="#ferramentas">Ferramentas</a>
+        <a href="#skills">Skills</a>
         <a class="nav-github" href={repo}>GitHub <span aria-hidden="true">↗</span></a>
       </nav>
       <div class="theme-control">
@@ -170,7 +171,7 @@ const ruleGroups = [
             <div class="tool-stats"><span><strong>21</strong> regras automáticas</span><span><strong>0</strong> rede por padrão</span><span><strong>3</strong> formatos de saída</span></div>
             <p>As outras 29 regras têm modo assistido especificado, mas ainda não são verificadas pelo motor. O lint auxilia a revisão; não certifica segurança ou correção técnica.</p>
             <p>O revisor local abre no navegador, usa o mesmo motor e aceita Markdown, texto simples e PDF com camada de texto. OCR e IA integrada estão fora do MVP.</p>
-            <a class="button button-light" href={`${repo}/blob/main/reviewer-webapp/README.md`}>Instalar o revisor local <span aria-hidden="true">↗</span></a>
+            <a class="button button-light" href={`${base}/revisor-local/`}>Começar com o revisor local <span aria-hidden="true">↗</span></a>
           </div>
           <div class="terminal" aria-label="Demonstração ilustrativa de diagnóstico do PTE-Lint">
             <div class="terminal-bar"><span>pte-lint / exemplo ilustrativo</span><span>offline</span></div>
@@ -183,6 +184,21 @@ const ruleGroups = [
               <p class="terminal-success">✓ análise concluída · 1 diagnóstico explicável</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="skills-section shell" id="skills" aria-labelledby="skills-title">
+        <div>
+          <div class="section-marker">Skills para agentes</div>
+          <h2 id="skills-title">Leve a revisão para seu projeto.</h2>
+          <p>Baixe duas skills com fontes PTE-100 v0.1: revisão documental e avaliação de evidências para piloto. O pack inclui o PTE-Lint opcional para Markdown e texto, sem precisar clonar o repositório.</p>
+          <p>Copie as pastas completas para o diretório de skills do seu agente e peça a revisão em pt-BR. O lint verifica 21 regras; as outras 29 precisam de avaliação com evidência e revisão humana.</p>
+        </div>
+        <div class="skills-download">
+          <a class="button button-primary" href={`${base}/downloads/pte100-skills.zip`} download>Baixar pack de skills <span aria-hidden="true">↓</span></a>
+          <a class="text-link" href={`${repo}/blob/main/agent-skills/README.md`}>Como instalar e usar <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href={`${base}/downloads/pte100-skills.zip.sha256`}>Conferir SHA-256 do ZIP</a>
+          <p>O PTE-Lint roda offline. Um agente com modelo remoto pode enviar documentos ao provedor: para conteúdo confidencial, configure um modelo local ou siga sua política de dados. O pack não certifica conformidade ou segurança.</p>
         </div>
       </section>
 

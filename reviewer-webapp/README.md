@@ -8,6 +8,8 @@ O produto recebe um documento, executa o PTE-Lint no computador da pessoa usuár
 
 ## Instalar e iniciar
 
+Comece pelo [tutorial curto](../docs/reviewer-local-tutorial.md), também disponível no [site](https://forge-z.github.io/pte100/revisor-local/) após publicação. O clone e `bundle install` precisam de rede; revisão e exportação funcionam offline após preparar as dependências.
+
 O revisor usa Ruby 3.3.x (referência de CI: 3.3.12) e Bundler 2.6.9. As dependências são Ruby puro. A CI cobre Linux; os comandos para macOS e Windows não representam uma garantia de instalação em todas as versões desses sistemas.
 
 ### macOS e Linux
@@ -43,9 +45,10 @@ Testes do serviço:
 ```sh
 bundle exec ruby -Iserver test/reviewer_webapp_test.rb
 bundle exec ruby -Iserver test/reviewer_server_test.rb
+bundle exec ruby test/reviewer_e2e_test.rb
 ```
 
-Na raiz do repositório, `BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle exec rake verify` executa essas verificações junto com os testes do PTE-Lint e a validação editorial. Consulte [tools/README.md](../tools/README.md) para preparar as dependências e reproduzir os demais checks da CI.
+Na raiz do repositório, `BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle exec rake verify` executa essas verificações, incluindo HTTP real em cópia limpa e regressões de startup/cleanup, junto com os testes do PTE-Lint e a validação editorial. Consulte [tools/README.md](../tools/README.md) para preparar as dependências e reproduzir os demais checks da CI.
 
 ## Resultado esperado
 
