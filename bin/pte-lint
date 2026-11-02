@@ -75,9 +75,10 @@ when "sarif"
 else
   diagnostics.each do |diagnostic|
     location = "#{diagnostic["file"]}:#{diagnostic.dig("range", "start", "line")}:#{diagnostic.dig("range", "start", "column")}"
-    puts "#{location} #{diagnostic["severity"]} #{diagnostic["rule"]} #{diagnostic["message"]}"
+    puts "#{location} #{diagnostic["severity"]} #{diagnostic["rule"]}: #{diagnostic["message"]}"
+    puts "  sugestão: #{diagnostic["suggestion"]}" if diagnostic["suggestion"]
   end
-  puts "#{result["summary"]["files"]} arquivo(s), #{result["summary"]["errors"]} erro(s), #{result["summary"]["warnings"]} aviso(s)" if diagnostics.any? || files.positive?
+  puts "#{result["summary"]["files"]} arquivo(s), #{result["summary"]["errors"]} erro(s), #{result["summary"]["warnings"]} aviso(s)" if files.positive?
 end
 
 fail_on = runner.config.data.fetch("fail_on", "error")

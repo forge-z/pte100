@@ -26,6 +26,13 @@ class PteLintCliTest < Minitest::Test
     end
   end
 
+  def test_text_output_includes_suggestion_and_summary
+    output, status = Open3.capture2e(RbConfig.ruby, CLI, "check", "--format", "text", stdin_data: "Faça a checagem da bateria.")
+    assert_equal 1, status.exitstatus, output
+    assert_match(/sugestão:/, output)
+    assert_match(/1 arquivo\(s\), \d+ erro\(s\), \d+ aviso\(s\)/, output)
+  end
+
   def test_missing_path_returns_input_error
     _output, status = Open3.capture2e(RbConfig.ruby, CLI, "check", File.join(ROOT, "missing.md"))
 

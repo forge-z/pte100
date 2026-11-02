@@ -145,4 +145,23 @@ class PteLintFixturesTest < Minitest::Test
     assert_equal 2, diagnostics.map { |d| d["fingerprint"] }.uniq.length
   end
 
+  def test_registered_abbreviation_reports_every_occurrence
+    diagnostics = @engine.check_text("Use temp. e temp. novamente.", "abbrev.md").select { |d| d["rule"] == "R005" }
+    assert_equal 2, diagnostics.length
+  end
+
+  def test_diagnostic_message_includes_rule_title
+    diagnostic = @engine.check_text("O operador deverá registrar a leitura.", "modal.md").find { |d| d["rule"] == "R018" }
+    assert_match(/R018/, diagnostic.fetch("message"))
+    assert_match(/modalidade/i, diagnostic.fetch("message"))
+  end
+
+  def test_each_automatic_rule_has_corpus_pass_and_fail_cases
+    automatic = PteLint::AUTOMATIC_RULES
+    automatic.each do |id|
+      assert @cases.any? { |item| item.fetch("id") == id && item.fetch("class") == "positive" }, "#{id} sem caso positivo no corpus"
+      assert @cases.any? { |item| item.fetch("id") == id && item.fetch("class") == "negative" }, "#{id} sem caso negativo no corpus"
+    end
+  end
+
 end
