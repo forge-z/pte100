@@ -23,11 +23,10 @@ h3{line-height:1.3}
 .site-header nav{display:flex; align-items:center; gap:28px; font-size:14px}
 .site-header nav a{padding-block:10px}
 .nav-github{border-left:1px solid var(--line); padding-left:28px}
-.theme-control{display:flex; align-items:center; gap:8px; margin-left:auto; color:var(--muted); font-size:12px}
-.theme-control label{font-weight:600}
-.theme-control select{min-height:34px; padding:5px 28px 5px 10px; border:1px solid var(--line); border-radius:3px; color:var(--ink); background:var(--control-bg); font:inherit; cursor:pointer}
-.theme-control select:focus-visible{outline:3px solid #2868aa; outline-offset:2px}
-.theme-control span{font-size:11px; white-space:nowrap}
+.theme-toggle{display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:40px; height:40px; margin-left:auto; padding:0; border:1px solid var(--line); border-radius:3px; color:var(--ink); background:var(--control-bg); cursor:pointer}
+.theme-toggle:focus-visible{outline:3px solid #2868aa; outline-offset:2px}
+.theme-toggle svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round}
+.theme-toggle svg[hidden]{display:none}
 
 .hero{display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; padding-block:80px 88px}
 .stamp,.section-marker{color:var(--blue); margin-bottom:24px; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase}

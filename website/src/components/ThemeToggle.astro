@@ -1,0 +1,71 @@
+<button
+  type="button"
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="Alternar tema: automático"
+  title="Tema: automático (segue o sistema)"
+>
+  <svg class="theme-icon theme-icon-system" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+    <rect x="3" y="4" width="18" height="12" rx="1.5" />
+    <path d="M8 20h8" />
+    <path d="M12 16v4" />
+  </svg>
+  <svg class="theme-icon theme-icon-light" aria-hidden="true" viewBox="0 0 24 24" focusable="false" hidden>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+  <svg class="theme-icon theme-icon-dark" aria-hidden="true" viewBox="0 0 24 24" focusable="false" hidden>
+    <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" />
+  </svg>
+</button>
+<script is:inline>
+  (() => {
+    const key = 'pte100-theme';
+    const root = document.documentElement;
+    const button = document.querySelector('#theme-toggle');
+    if (!button) return;
+
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const icons = {
+      system: button.querySelector('.theme-icon-system'),
+      light: button.querySelector('.theme-icon-light'),
+      dark: button.querySelector('.theme-icon-dark'),
+    };
+    const labels = {
+      system: { label: 'Alternar tema: automático', title: 'Tema: automático (segue o sistema)' },
+      light: { label: 'Alternar tema: claro', title: 'Tema: claro' },
+      dark: { label: 'Alternar tema: escuro', title: 'Tema: escuro' },
+    };
+    const order = ['system', 'light', 'dark'];
+
+    const apply = (preference) => {
+      const dark = preference === 'dark' || (preference === 'system' && media.matches);
+      root.dataset.theme = dark ? 'dark' : 'light';
+      root.dataset.themePreference = preference;
+      if (meta) meta.content = dark ? '#111a24' : '#ffffff';
+      order.forEach((name) => {
+        const icon = icons[name];
+        if (icon) icon.hidden = name !== preference;
+      });
+      const copy = labels[preference];
+      button.setAttribute('aria-label', copy.label);
+      button.setAttribute('title', copy.title);
+    };
+
+    const saved = localStorage.getItem(key);
+    let preference = order.includes(saved) ? saved : 'system';
+    apply(preference);
+
+    button.addEventListener('click', () => {
+      const index = order.indexOf(preference);
+      preference = order[(index + 1) % order.length];
+      localStorage.setItem(key, preference);
+      apply(preference);
+    });
+
+    media.addEventListener('change', () => {
+      if (preference === 'system') apply('system');
+    });
+  })();
+</script>
