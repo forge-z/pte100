@@ -4,6 +4,36 @@
 
 Este documento define o contrato de uma implementação de referência. O repositório agora inclui um **MVP offline** em `bin/pte-lint`, escrito apenas com a biblioteca padrão do Ruby. Ele implementa as 21 regras com modo `automatic`; regras `assisted` continuam especificadas, mas ainda não têm motor de PLN. O MVP recebe texto e configuração, aplica uma versão fixa de regras e produz diagnósticos explicáveis.
 
+### Regras automáticas no MVP
+
+Cada regra abaixo tem implementação em `lib/pte_lint.rb`, mensagem com ID e título, posição no arquivo e pelo menos um caso positivo e um negativo em `corpus/cases.yaml` (testados em `test/test_pte_lint.rb`).
+
+| ID | Escopo resumido |
+|---|---|
+| R001 | termo proibido ou não preferido do vocabulário |
+| R004 | sigla sem expansão na primeira ocorrência |
+| R005 | abreviação não registrada |
+| R006 | nominalização quando há verbo direto no registro |
+| R012 | frase acima do limite de palavras |
+| R014 | condição de execução após a ação |
+| R017 | dupla negação na mesma frase |
+| R018 | modalidade normativa imprecisa |
+| R021 | passo de procedimento sem ação inicial |
+| R029 | referência posicional a outro trecho |
+| R031 | palavra-sinal de alerta não registrada |
+| R037 | unidade fora do perfil SI |
+| R038 | falta de espaço inquebrável entre valor e unidade |
+| R039 | símbolo de unidade malformado |
+| R040 | faixa numérica com limites ambíguos |
+| R041 | data numérica ambígua |
+| R042 | separador decimal incompatível com a localidade |
+| R045 | texto de link não descritivo |
+| R046 | front matter sem ID persistente |
+| R048 | variantes declaradas sem `applies_to` |
+| R050 | proveniência incompleta ou status inválido |
+
+Saída em texto lista `arquivo:linha:coluna`, severidade, regra, mensagem e linha `sugestão:` quando houver correção sugerida. O resumo `N arquivo(s), …` aparece sempre que pelo menos um arquivo foi analisado.
+
 ## Requisitos funcionais
 
 O PTE-Lint DEVE:

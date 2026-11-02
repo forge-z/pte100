@@ -247,21 +247,21 @@ module PteLint
 
     def check_R005(document, rule)
       source = mask_literals(document.body)
-      ABBREVIATION_REGISTRY.filter_map do |abbreviation, replacement|
-        next unless source.match?(/(?<![\p{L}])#{Regexp.escape(abbreviation)}(?![\p{L}])/iu)
-
-        offset = source.index(/(?<![\p{L}])#{Regexp.escape(abbreviation)}(?![\p{L}])/iu)
-        diagnostic(document, rule, offset, "A abreviação '#{abbreviation}' não está registrada.", abbreviation, suggestion: replacement)
+      ABBREVIATION_REGISTRY.flat_map do |abbreviation, replacement|
+        regex = /(?<![\p{L}])#{Regexp.escape(abbreviation)}(?![\p{L}])/iu
+        scan_matches(source, regex).map do |match|
+          diagnostic(document, rule, match.begin(0), "A abreviação '#{abbreviation}' não está registrada; prefira '#{replacement}'.", match[0], suggestion: replacement)
+        end
       end
     end
 
     def check_R006(document, rule)
       source = mask_literals(document.body)
-      NOMINALIZATIONS.filter_map do |phrase, replacement|
-        match = source.match(/\b#{Regexp.escape(phrase)}\b/iu)
-        next unless match
-
-        diagnostic(document, rule, match.begin(0), "Prefira o verbo direto '#{replacement}'.", match[0], suggestion: replacement)
+      NOMINALIZATIONS.flat_map do |phrase, replacement|
+        regex = /\b#{Regexp.escape(phrase)}\b/iu
+        scan_matches(source, regex).map do |match|
+          diagnostic(document, rule, match.begin(0), "Prefira o verbo direto '#{replacement}'.", match[0], suggestion: replacement)
+        end
       end
     end
 
@@ -300,11 +300,11 @@ module PteLint
 
     def check_R018(document, rule)
       source = mask_literals(document.body)
-      NONSTANDARD_MODALITY.filter_map do |phrase|
-        match = source.match(/\b#{Regexp.escape(phrase)}\b/iu)
-        next unless match
-
-        diagnostic(document, rule, match.begin(0), "Use uma modalidade normativa padronizada; '#{match[0]}' é impreciso.", match[0])
+      NONSTANDARD_MODALITY.flat_map do |phrase|
+        regex = /\b#{Regexp.escape(phrase)}\b/iu
+        scan_matches(source, regex).map do |match|
+          diagnostic(document, rule, match.begin(0), "Use modalidade normativa padronizada (deve, não deve, deveria, pode); '#{match[0]}' é impreciso.", match[0])
+        end
       end
     end
 
@@ -347,12 +347,11 @@ module PteLint
 
     def check_R037(document, rule)
       source = mask_literals(document.body)
-      INVALID_UNITS.filter_map do |unit|
+      INVALID_UNITS.flat_map do |unit|
         regex = /\b\d+(?:[.,]\d+)?\s*#{Regexp.escape(unit)}\b/iu
-        match = source.match(regex)
-        next unless match
-
-        diagnostic(document, rule, match.begin(0), "A unidade '#{unit}' não pertence ao perfil ativo.", match[0])
+        scan_matches(source, regex).map do |match|
+          diagnostic(document, rule, match.begin(0), "A unidade '#{unit}' não pertence ao perfil SI ativo.", match[0])
+        end
       end
     end
 
@@ -467,6 +466,10 @@ module PteLint
       results
     end
 
+    def scan_matches(source, pattern)
+      source.to_enum(:scan, pattern).map { Regexp.last_match }
+    end
+
     def mask_literals(text, preserve_links: false)
       fence = nil
       masked = text.lines.map do |line|
@@ -510,10 +513,12 @@ module PteLint
       absolute_offset = document.byte_offset_for(offset)
       severity = config.severity(rule)
       fingerprint = Digest::SHA256.hexdigest([rule.fetch("id"), document.path, evidence.to_s.downcase.gsub(/\s+/, " ")].join("\0"))[0, 16]
+      rule_title = rule["title"]
+      full_message = rule_title && !message.start_with?(rule.fetch("id")) ? "#{rule.fetch("id")} (#{rule_title}): #{message}" : message
       result = {
         "rule" => rule.fetch("id"),
         "severity" => severity,
-        "message" => message,
+        "message" => full_message,
         "file" => document.path,
         "range" => {"start" => {"line" => line, "column" => column, "offset" => absolute_offset}, "end" => {"line" => end_line, "column" => end_column, "offset" => document.byte_offset_for(end_offset)}},
         "mode" => rule.dig("lint", "mode"),

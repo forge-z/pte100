@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import ThemeBoot from '../components/ThemeBoot.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const repo = 'https://github.com/forge-z/pte100';
 ---
@@ -9,6 +11,8 @@ const repo = 'https://github.com/forge-z/pte100';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Tutorial curto para instalar o revisor PTE-100 e revisar Markdown, texto e PDF textual offline no computador." />
+    <meta name="theme-color" content="#ffffff" />
+    <ThemeBoot />
     <link rel="icon" href={`${base}/favicon.svg`} />
     <title>Revisor local: como começar — PTE-100</title>
   </head>
@@ -17,34 +21,35 @@ const repo = 'https://github.com/forge-z/pte100';
     <header class="site-header shell">
       <a class="wordmark" href={`${base}/`}><span class="wordmark-mark" aria-hidden="true">P/</span><span>PTE-100</span></a>
       <nav aria-label="Navegação"><a href={`${base}/#ferramentas`}>Ferramentas</a><a href={`${base}/#skills`}>Skills</a></nav>
+      <ThemeToggle />
     </header>
     <main class="shell tutorial" id="tutorial">
       <p class="stamp">Revisão no seu computador</p>
-      <h1>Comece com o revisor local.</h1>
-      <p>Este site apresenta a proposta e os downloads. A revisão acontece em um aplicativo que você inicia no computador e abre no navegador. Depois de instalar as dependências, ele funciona offline e preserva o documento original.</p>
+      <h1>Revisor local</h1>
+      <p>A proposta e os downloads ficam neste site. A revisão roda no seu computador: clone o repositório, inicie o servidor e abra o endereço local no navegador.</p>
       <h2>1. Prepare uma vez</h2>
-      <p>Tenha Git e Ruby 3.3.x (referência: 3.3.12). O clone e a instalação das gems precisam de internet. Abra um terminal e execute:</p>
+      <p>Git e Ruby 3.3.x (referência: 3.3.12). Clone e gems exigem internet na primeira vez.</p>
       <pre><code>git clone https://github.com/forge-z/pte100.git
 cd pte100/reviewer-webapp
 gem install bundler -v 2.6.9
 bundle install</code></pre>
-      <p>Se preferir <a href={`${repo}/archive/refs/heads/main.zip`}>baixar o código em ZIP</a>, extraia a pasta inteira e abra o terminal em <code>pte100-main/reviewer-webapp</code>. Preserve as pastas irmãs <code>lib</code>, <code>rules</code> e <code>vocabulary</code>. No Windows, consulte as <a href={`${repo}/blob/main/reviewer-webapp/README.md`}>instruções com RubyInstaller e PowerShell</a>.</p>
+      <p>Alternativa: <a href={`${repo}/archive/refs/heads/main.zip`}>ZIP do repositório</a>. Extraia tudo e entre em <code>pte100-main/reviewer-webapp</code>, mantendo <code>lib</code>, <code>rules</code> e <code>vocabulary</code> no mesmo nível. Windows: <a href={`${repo}/blob/main/reviewer-webapp/README.md`}>RubyInstaller e PowerShell</a>.</p>
       <h2>2. Inicie a revisão</h2>
       <pre><code>bundle exec ruby bin/reviewer-webapp</code></pre>
-      <p>Mantenha o terminal aberto e acesse <a href="http://127.0.0.1:43100/">http://127.0.0.1:43100/</a> no navegador. O endereço só responde quando o processo está ativo. Não abra o HTML como arquivo isolado. Para encerrar, use <kbd>Ctrl-C</kbd> no terminal.</p>
+      <p>Com o terminal aberto, acesse <a href="http://127.0.0.1:43100/">http://127.0.0.1:43100/</a>. Não abra arquivos HTML soltos. Encerre com <kbd>Ctrl-C</kbd>.</p>
       <h2>3. Importe e confira os achados</h2>
       <ol>
-        <li>Escolha um arquivo <code>.md</code>, <code>.markdown</code>, <code>.txt</code> UTF-8 ou PDF com texto selecionável, até 5 MB. PDF tem limite de 200 páginas; documento, 100 mil palavras.</li>
-        <li>Use <strong>pt-BR</strong> e o nível adequado: PTE-Estrutura, PTE-Claro ou PTE-IA. Os níveis são cumulativos.</li>
-        <li>Clique em <strong>Iniciar revisão</strong>. Confira regra, localização, evidência e sugestão; filtros ajudam a navegar.</li>
-        <li>Use <strong>Exportar JSON</strong> para guardar o relatório. Ele pode conter trechos confidenciais. A exportação não altera o documento.</li>
+        <li>Arquivo <code>.md</code>, <code>.markdown</code>, <code>.txt</code> UTF-8 ou PDF com texto selecionável (até 5 MB; PDF até 200 páginas; documento até 100 mil palavras).</li>
+        <li>Idioma <strong>pt-BR</strong> e nível PTE-Estrutura, PTE-Claro ou PTE-IA (cumulativos).</li>
+        <li><strong>Iniciar revisão</strong>: confira regra, posição, evidência e sugestão.</li>
+        <li><strong>Exportar JSON</strong> guarda o relatório sem alterar o original (pode conter trechos confidenciais).</li>
       </ol>
-      <p>Para testar sem dados privados, <a href={`${base}/downloads/revisor-exemplo.md`} download>baixe este exemplo sintético</a>. Em PTE-Claro, ele deve gerar cinco achados: R014 (condição posterior), R038 (espaço de unidade), R021 (ação no passo), R018 (modalidade) e R006 (nominalização). Os achados não aprovam a engenharia do exemplo.</p>
+      <p>Exemplo sintético: <a href={`${base}/downloads/revisor-exemplo.md`} download>revisor-exemplo.md</a>. Em PTE-Claro, espere cinco achados (R014, R038, R021, R018, R006).</p>
       <h2>Limites e ajuda</h2>
-      <p>O motor verifica 21 regras automáticas. As outras 29 exigem avaliação e revisão humana. Zero achados não comprova conformidade, aprovação, segurança ou correção técnica. PDF digitalizado/OCR e DOCX não são aceitos. Posições de PDF se referem ao texto extraído e precisam ser conferidas no original.</p>
-      <p>“Não foi possível acessar” geralmente significa que o servidor não está ativo ou a porta está ocupada. Confira o terminal. Para outra porta, no macOS/Linux use <code>PTE_REVIEWER_PORT=43101 bundle exec ruby bin/reviewer-webapp</code> e abra <code>http://127.0.0.1:43101/</code>. Se PDF não estiver disponível, execute <code>bundle install</code> e reinicie.</p>
-      <p>O revisor usa apenas loopback e não integra IA remota. Ele não protege contra malware, extensões ou captura de tela. <a href={`${repo}/blob/main/reviewer-webapp/docs/privacy.md`}>Leia os limites de privacidade</a>. As skills são um fluxo separado: um agente com modelo remoto pode enviar conteúdo ao provedor.</p>
-      <a class="button button-primary" href={`${base}/#skills`}>Conhecer as skills para agentes <span aria-hidden="true">→</span></a>
+      <p>21 regras automáticas; 29 assistidas sem motor. Zero achados não significa conformidade nem aprovação de segurança. PDF escaneado/OCR e DOCX não entram. Posições em PDF referem-se ao texto extraído.</p>
+      <p>Erro de acesso: servidor parado ou porta ocupada. Outra porta: <code>PTE_REVIEWER_PORT=43101 bundle exec ruby bin/reviewer-webapp</code>. PDF indisponível: rode <code>bundle install</code> de novo.</p>
+      <p>Só loopback; sem IA remota. <a href={`${repo}/blob/main/reviewer-webapp/docs/privacy.md`}>Privacidade do revisor</a>. Skills com agente remoto são fluxo separado.</p>
+      <a class="button button-primary" href={`${base}/#skills`}>Skills para agentes <span aria-hidden="true">→</span></a>
     </main>
     <footer class="site-footer shell"><p>PTE-100 v0.1 · proposta experimental · <a href={`${base}/`}>Voltar ao início</a></p></footer>
   </body>
