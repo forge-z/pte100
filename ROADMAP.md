@@ -25,7 +25,7 @@ Critério de saída: três pilotos públicos, pelo menos 1.000 frases avaliadas,
 - [x] fornecer saída texto, JSON e SARIF na CLI;
 - [x] manter 42 fixtures sintéticas: uma positiva para detecção e uma negativa por regra automática;
 - [ ] ampliar o [conjunto de conformidade](docs/pte-lint.md#conjunto-de-conformidade);
-- [ ] lançar extensão VS Code experimental.
+- [ ] lançar extensão VS Code experimental; plano em [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md).
 
 Critério de saída: execução reproduzível, cobertura de todas as regras automáticas e nenhuma alteração destrutiva por padrão.
 
@@ -34,7 +34,7 @@ O MVP atual tem execução reproduzível, ferramentas de ingestão de corpus e r
 ## Fase 2 — Ecossistema (2027, primeiro semestre)
 
 - definir PTE-200 Vocabulary v0.1;
-- lançar MCP Server somente leitura e API REST beta;
+- lançar MCP Server somente leitura e API REST beta; plano do servidor em [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md);
 - publicar perfis PTE-300 para software e manutenção;
 - adicionar perfis de localidade lusófonos com revisão comunitária;
 - integrar Language Server Protocol à extensão.
