@@ -85,6 +85,62 @@ class PteMcpServerTest < Minitest::Test
     assert_equal [-32700, -32601, -32602], responses.map { |r| r.dig("error", "code") }
   end
 
+  def test_utf8_stdio_is_independent_of_locale
+    lines = [JSON.generate({"jsonrpc" => "2.0", "id" => 1, "method" => "tools/call", "params" => {
+      "name" => "pte_check_text", "arguments" => {"text" => "Faça a checagem da pressão. 🛠️", "filename" => "acentuação-😀.md"}
+    }})]
+    expected = raw_session(lines, env: {"LC_ALL" => "C.UTF-8"})
+    [{"LC_ALL" => "C", "LANG" => nil}, {"LC_ALL" => nil, "LANG" => nil, "LC_CTYPE" => nil}].each do |env|
+      assert_equal expected, raw_session(lines, env: env)
+    end
+    refute expected.fetch(0).dig("result", "isError")
+    assert_equal "R001", expected.fetch(0).dig("result", "structuredContent", "diagnostics", 0, "rule")
+  end
+
+  def test_malformed_messages_do_not_stop_the_process
+    cases = [
+      ["{", -32700, nil],
+      ["\xff".b, -32700, nil],
+      [JSON.generate([{"jsonrpc" => "2.0", "id" => 1, "method" => "ping"}]), -32600, nil],
+      [JSON.generate({"jsonrpc" => "2.0", "id" => nil, "method" => "ping"}), -32600, nil]
+    ]
+    %w[initialize tools/call].each do |method|
+      [[], "texto", 1, true, nil].each do |params|
+        cases << [JSON.generate({"jsonrpc" => "2.0", "id" => 1, "method" => method, "params" => params}), -32602, 1]
+      end
+    end
+    cases.each do |line, code, id|
+      responses = raw_session([line, JSON.generate({"jsonrpc" => "2.0", "id" => 2, "method" => "ping"})], env: {"LC_ALL" => "C", "LANG" => nil})
+      assert_equal 2, responses.length
+      assert_equal code, responses.fetch(0).dig("error", "code")
+      assert_equal [id], [responses.fetch(0)["id"]]
+      assert_equal({"jsonrpc" => "2.0", "id" => 2, "result" => {}}, responses.fetch(1))
+    end
+  end
+
+  def test_notifications_remain_silent_even_with_invalid_params
+    lines = [
+      {"jsonrpc" => "2.0", "method" => "notifications/initialized"},
+      {"jsonrpc" => "2.0", "method" => "initialize", "params" => []},
+      {"jsonrpc" => "2.0", "method" => "tools/call", "params" => []},
+      {"jsonrpc" => "2.0", "id" => 1, "method" => "ping"}
+    ]
+    assert_equal [{"jsonrpc" => "2.0", "id" => 1, "result" => {}}], raw_session(lines.map { |line| JSON.generate(line) })
+  end
+
+  def test_unexpected_exception_returns_internal_error_and_keeps_serving
+    injection = 'require_relative "lib/pte_mcp"; class PteMcp::Server; def initialize_result(requested); raise "detalhe privado"; end; end; load ARGV.fetch(0)'
+    lines = [
+      {"jsonrpc" => "2.0", "id" => "init", "method" => "initialize"},
+      {"jsonrpc" => "2.0", "method" => "initialize"},
+      {"jsonrpc" => "2.0", "id" => 2, "method" => "ping"}
+    ]
+    responses = raw_session(lines.map { |line| JSON.generate(line) }, ruby_options: ["-e", injection])
+    assert_equal 2, responses.length
+    assert_equal({"jsonrpc" => "2.0", "id" => "init", "error" => {"code" => -32603, "message" => "Erro interno"}}, responses.fetch(0))
+    assert_equal({"jsonrpc" => "2.0", "id" => 2, "result" => {}}, responses.fetch(1))
+  end
+
   def test_session_does_not_write_workspace
     before = workspace_state
     session({"method" => "tools/list"},
@@ -108,8 +164,9 @@ class PteMcpServerTest < Minitest::Test
     raw_session(messages.map { |message| JSON.generate(message) })
   end
 
-  def raw_session(lines)
-    stdout, stderr, status = Open3.capture3(RbConfig.ruby, SERVER, stdin_data: lines.join("\n") + "\n", chdir: ROOT)
+  def raw_session(lines, env: {}, ruby_options: [])
+    input = lines.map(&:b).join("\n") + "\n"
+    stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, *ruby_options, SERVER, stdin_data: input, chdir: ROOT)
     assert status.success?, stderr
     assert_empty stderr
     stdout.lines.map { |line| JSON.parse(line) }

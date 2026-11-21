@@ -16,6 +16,29 @@ class PteLintCliTest < Minitest::Test
     assert_equal "sample.md", JSON.parse(output).dig("diagnostics", 0, "file")
   end
 
+  def test_utf8_stdin_and_output_are_independent_of_locale
+    ["Faça a checagem da pressão. 🛠️", "Verifique a pressão. 🛠️", ""].each do |text|
+      %w[json text].each do |format|
+        args = [RbConfig.ruby, CLI, "check", "--format", format, "--stdin-filename", "x.md"]
+        expected, expected_stderr, expected_status = Open3.capture3({"LC_ALL" => "C.UTF-8"}, *args, stdin_data: text)
+        assert_empty expected_stderr
+        [{"LC_ALL" => "C", "LANG" => nil}, {"LC_ALL" => nil, "LANG" => nil, "LC_CTYPE" => nil}].each do |env|
+          stdout, stderr, status = Open3.capture3(env, *args, stdin_data: text)
+          assert_equal expected_status.exitstatus, status.exitstatus, stderr
+          assert_equal expected, stdout
+          assert_empty stderr
+        end
+      end
+    end
+  end
+
+  def test_invalid_utf8_stdin_returns_input_error
+    _stdout, stderr, status = Open3.capture3({"LC_ALL" => "C", "LANG" => nil}, RbConfig.ruby, CLI, "check", "--stdin-filename", "x.md", stdin_data: "\xff".b)
+
+    assert_equal 3, status.exitstatus
+    assert_match(/invalid byte sequence in UTF-8/, stderr)
+  end
+
   def test_fail_on_never_never_fails_the_command
     Tempfile.create(["pte-lint", ".yaml"]) do |config|
       config.write("fail_on: never\n")

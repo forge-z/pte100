@@ -5,6 +5,11 @@ require "json"
 require "optparse"
 require_relative "../lib/pte_lint"
 
+Encoding.default_external = Encoding::UTF_8
+STDIN.set_encoding(Encoding::UTF_8)
+STDOUT.set_encoding(Encoding::UTF_8)
+STDERR.set_encoding(Encoding::UTF_8)
+
 command = ARGV.shift || "check"
 options = {format: "text", paths: []}
 parser = OptionParser.new do |opts|

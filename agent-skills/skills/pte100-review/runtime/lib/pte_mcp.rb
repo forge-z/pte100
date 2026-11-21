@@ -56,27 +56,42 @@ module PteMcp
     end
 
     def serve(input = $stdin, output = $stdout)
+      input.set_encoding(Encoding::UTF_8)
+      output.set_encoding(Encoding::UTF_8)
       output.sync = true
       input.each_line do |line|
-        next if line.strip.empty?
-
         response = handle_line(line)
         output.puts(JSON.generate(response)) if response
       end
     end
 
     def handle_line(line)
-      message = JSON.parse(line)
+      message = nil
+      line = line.dup.force_encoding(Encoding::UTF_8)
+      return error(nil, -32700, "UTF-8 inválido") unless line.valid_encoding?
+      return nil if line.strip.empty?
+
+      begin
+        message = JSON.parse(line)
+      rescue JSON::ParserError
+        return error(nil, -32700, "JSON inválido")
+      end
       return error(nil, -32600, "Requisição inválida") unless message.is_a?(Hash) && message["jsonrpc"] == "2.0"
 
       handle(message)
-    rescue JSON::ParserError
-      error(nil, -32700, "JSON inválido")
+    rescue StandardError
+      return nil if message.is_a?(Hash) && !message.key?("id")
+
+      error(message.is_a?(Hash) ? message["id"] : nil, -32603, "Erro interno")
     end
 
     def handle(message)
       id = message["id"]
       return nil unless message.key?("id")
+      return error(nil, -32600, "Identificador não pode ser null") if id.nil?
+      if message.key?("params") && !message["params"].is_a?(Hash)
+        return error(id, -32602, "Parâmetros devem ser objeto")
+      end
 
       case message["method"]
       when "initialize" then result(id, initialize_result(message.dig("params", "protocolVersion")))
@@ -121,7 +136,9 @@ module PteMcp
         value = optional_arg(arguments, key)
         args.push("--#{key}", value) if value
       end
-      stdout, stderr, status = Open3.capture3(*args, stdin_data: text, chdir: @root)
+      stdout, stderr, status = Open3.capture3(*args, stdin_data: text, chdir: @root, binmode: true)
+      stdout.force_encoding(Encoding::UTF_8)
+      stderr.force_encoding(Encoding::UTF_8)
       raise ToolError, "pte-lint terminou com código #{status.exitstatus}: #{stderr.strip}" unless [0, 1].include?(status.exitstatus)
 
       JSON.parse(stdout)

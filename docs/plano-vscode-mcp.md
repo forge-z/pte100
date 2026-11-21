@@ -132,6 +132,8 @@ Estado: implementada em [bin/pte-mcp](../bin/pte-mcp) e [lib/pte_mcp.rb](../lib/
 
 Processo local, transporte `stdio`, sem rede e sem escrita. Três ferramentas, os mesmos nomes já listados em [tooling-plan.md](tooling-plan.md). `pte_check_file`, `pte_list_rules` e `pte_validate_metadata` continuam só naquele plano.
 
+A entrada, a saída e a comunicação com a CLI usam UTF-8, independentemente de `LANG` e `LC_ALL`, inclusive com `LC_ALL=C`. JSON ou bytes UTF-8 inválidos recebem erro JSON-RPC `-32700`, com ID `null`; `params` presente deve ser objeto (`-32602`). Requisições com ID `null` são recusadas (`-32600`); notificações sem ID não recebem resposta. Uma exceção inesperada durante o tratamento da mensagem recebe `-32603`, com o ID conhecido e sem expor detalhes internos. O processo continua atendendo as linhas seguintes após esses erros.
+
 | Ferramenta | Entrada | Saída |
 |---|---|---|
 | `pte_check_text` | `text`; `locale` e `level` opcionais; nome de arquivo opcional | documento JSON da CLI, schema `1.0` |
