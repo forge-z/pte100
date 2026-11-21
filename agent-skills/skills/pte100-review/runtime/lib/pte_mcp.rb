@@ -79,9 +79,10 @@ module PteMcp
       return error(nil, -32600, "Requisição inválida") unless message.is_a?(Hash) && message["jsonrpc"] == "2.0"
 
       handle(message)
-    rescue StandardError
+    rescue StandardError => exception
       return nil if message.is_a?(Hash) && !message.key?("id")
 
+      log_internal_error(exception, message)
       error(message.is_a?(Hash) ? message["id"] : nil, -32603, "Erro interno")
     end
 
@@ -103,6 +104,20 @@ module PteMcp
     end
 
     private
+
+    def log_internal_error(exception, message)
+      detail = exception.message.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+      params = message["params"] if message.is_a?(Hash)
+      arguments = params["arguments"] if params.is_a?(Hash)
+      text = arguments["text"] if arguments.is_a?(Hash)
+      if text.is_a?(String) && !text.empty?
+        [text, *text.lines.map(&:strip)].reject(&:empty?).each do |part|
+          detail = detail.gsub(part, "[texto omitido]").gsub(JSON.generate(part)[1...-1], "[texto omitido]")
+        end
+      end
+      location = exception.backtrace_locations&.first
+      $stderr.puts("pte-mcp: #{exception.class}: #{detail.inspect} (#{location})")
+    end
 
     def initialize_result(requested)
       {
@@ -131,7 +146,7 @@ module PteMcp
       text = string_arg(arguments, "text")
       raise ToolError, "Texto acima de #{MAX_TEXT_BYTES} bytes; envie um trecho menor." if text.bytesize > MAX_TEXT_BYTES
 
-      args = [RbConfig.ruby, CLI, "check", "--format", "json", "--stdin-filename", optional_arg(arguments, "filename") || "<stdin>"]
+      args = [RbConfig.ruby, "-EUTF-8", CLI, "check", "--format", "json", "--stdin-filename", optional_arg(arguments, "filename") || "<stdin>"]
       %w[level locale].each do |key|
         value = optional_arg(arguments, key)
         args.push("--#{key}", value) if value

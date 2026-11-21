@@ -30,6 +30,7 @@ Esta seção registra ferramentas e manutenção em desenvolvimento. O snapshot 
 
 ### Corrigido
 
+- argumentos UTF-8 da CLI e do subprocesso MCP, incluindo nomes de arquivo e caminhos de configuração com acentos em localidades C/POSIX; erros internos do MCP agora deixam diagnóstico em stderr sem o texto analisado;
 - entrada e saída UTF-8 da CLI e do servidor MCP independentes da localidade; mensagens MCP malformadas, parâmetros que não são objetos, IDs `null` e falhas inesperadas recebem erros sem encerrar o servidor;
 - tratamento de caminhos/configuração ausentes, contagem de arquivos, `--stdin-filename` e `fail_on: never` na CLI;
 - offsets UTF-8 e intervalos de múltiplas linhas, análise após títulos e primeira ocorrência de siglas no motor;

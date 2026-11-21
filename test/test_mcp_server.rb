@@ -87,14 +87,16 @@ class PteMcpServerTest < Minitest::Test
 
   def test_utf8_stdio_is_independent_of_locale
     lines = [JSON.generate({"jsonrpc" => "2.0", "id" => 1, "method" => "tools/call", "params" => {
-      "name" => "pte_check_text", "arguments" => {"text" => "Faça a checagem da pressão. 🛠️", "filename" => "acentuação-😀.md"}
+      "name" => "pte_check_text", "arguments" => {"text" => "É necessário que o operador faça a verificação. 🛠️", "filename" => "ação-ã-é.md"}
     }})]
     expected = raw_session(lines, env: {"LC_ALL" => "C.UTF-8"})
-    [{"LC_ALL" => "C", "LANG" => nil}, {"LC_ALL" => nil, "LANG" => nil, "LC_CTYPE" => nil}].each do |env|
+    [{"LC_ALL" => "C", "LANG" => nil}, {"LC_ALL" => "POSIX", "LANG" => ""}, {"LC_ALL" => nil, "LANG" => nil, "LC_CTYPE" => nil}].each do |env|
       assert_equal expected, raw_session(lines, env: env)
     end
     refute expected.fetch(0).dig("result", "isError")
-    assert_equal "R001", expected.fetch(0).dig("result", "structuredContent", "diagnostics", 0, "rule")
+    diagnostics = expected.fetch(0).dig("result", "structuredContent", "diagnostics")
+    assert_includes diagnostics.map { |d| d["rule"] }, "R018"
+    assert_equal ["ação-ã-é.md"], diagnostics.map { |d| d["file"] }.uniq
   end
 
   def test_malformed_messages_do_not_stop_the_process
@@ -135,10 +137,29 @@ class PteMcpServerTest < Minitest::Test
       {"jsonrpc" => "2.0", "method" => "initialize"},
       {"jsonrpc" => "2.0", "id" => 2, "method" => "ping"}
     ]
-    responses = raw_session(lines.map { |line| JSON.generate(line) }, ruby_options: ["-e", injection])
+    responses = raw_session(lines.map { |line| JSON.generate(line) }, ruby_options: ["-e", injection], stderr_pattern: /RuntimeError:.*detalhe privado.*-e:1/)
     assert_equal 2, responses.length
     assert_equal({"jsonrpc" => "2.0", "id" => "init", "error" => {"code" => -32603, "message" => "Erro interno"}}, responses.fetch(0))
     assert_equal({"jsonrpc" => "2.0", "id" => 2, "result" => {}}, responses.fetch(1))
+  end
+
+  def test_internal_error_diagnostic_does_not_include_analyzed_text
+    text = "Conteúdo confidencial.\nOutra linha privada."
+    injection = 'require_relative "lib/pte_mcp"; class PteMcp::Server; def check_text(arguments); raise "falha: #{arguments.fetch("text")}"; end; end; load ARGV.fetch(0)'
+    lines = [
+      {"jsonrpc" => "2.0", "id" => 1, "method" => "tools/call", "params" => {"name" => "pte_check_text", "arguments" => {"text" => text}}},
+      {"jsonrpc" => "2.0", "id" => 2, "method" => "ping"}
+    ]
+    %w[C POSIX].each do |locale|
+      stdout, stderr, status = Open3.capture3({"LC_ALL" => locale, "LANG" => ""}, RbConfig.ruby, "-e", injection, SERVER, stdin_data: lines.map { |line| JSON.generate(line) }.join("\n") + "\n", chdir: ROOT)
+      assert status.success?, stderr
+      assert_equal 1, stderr.lines.length
+      assert_match(/pte-mcp: RuntimeError:.*falha:.*texto omitido.*-e:1/, stderr)
+      text.lines.map(&:strip).each { |line| refute_includes stderr, line }
+      responses = stdout.lines.map { |line| JSON.parse(line) }
+      assert_equal(-32603, responses.fetch(0).dig("error", "code"))
+      assert_equal({"jsonrpc" => "2.0", "id" => 2, "result" => {}}, responses.fetch(1))
+    end
   end
 
   def test_session_does_not_write_workspace
@@ -164,11 +185,16 @@ class PteMcpServerTest < Minitest::Test
     raw_session(messages.map { |message| JSON.generate(message) })
   end
 
-  def raw_session(lines, env: {}, ruby_options: [])
+  def raw_session(lines, env: {}, ruby_options: [], stderr_pattern: nil)
     input = lines.map(&:b).join("\n") + "\n"
     stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, *ruby_options, SERVER, stdin_data: input, chdir: ROOT)
     assert status.success?, stderr
-    assert_empty stderr
+    if stderr_pattern
+      assert_equal 1, stderr.lines.length
+      assert_match stderr_pattern, stderr
+    else
+      assert_empty stderr
+    end
     stdout.lines.map { |line| JSON.parse(line) }
   end
 
