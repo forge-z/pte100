@@ -103,6 +103,85 @@ it("falha da CLI vira erro da ferramenta e mantém os diagnósticos", async () =
   }
 });
 
+async function pteActions(document: vscode.TextDocument): Promise<vscode.CodeAction[]> {
+  const full = new vscode.Range(0, 0, document.lineCount, 0);
+  const actions = await vscode.commands.executeCommand<Array<vscode.CodeAction | vscode.Command>>(
+    "vscode.executeCodeActionProvider", document.uri, full
+  );
+  // O comando não devolve `diagnostics`; as ações da extensão se distinguem pelo título.
+  return actions.filter((a): a is vscode.CodeAction => "kind" in a && a.title.startsWith("PTE-100:"));
+}
+
+const fixture = (kind: string, rule: string) =>
+  vscode.workspace.openTextDocument(path.join(FIXTURES, kind, `${rule}.md`));
+
+async function scratch(source: vscode.TextDocument): Promise<vscode.TextDocument> {
+  return vscode.workspace.openTextDocument({language: "markdown", content: source.getText()});
+}
+
+function replacements(action: vscode.CodeAction): string[] {
+  return action.edit?.entries().flatMap(([, edits]) => edits.map((e) => e.newText)) ?? [];
+}
+
+it("R038 oferece Code Action com U+00A0 entre número e símbolo", async () => {
+  const document = await fixture("positive", "R038");
+  await analyzed(document);
+  const actions = await pteActions(document);
+  assert.equal(actions.length, 1);
+  assert.equal(actions[0].kind?.value, vscode.CodeActionKind.QuickFix.value);
+  assert.match(replacements(actions[0]).join(""), /\d\u00a0\S/);
+});
+
+it("R039 aplica o símbolo do registro", async () => {
+  const document = await scratch(await fixture("positive", "R039"));
+  const diagnostics = await analyzed(document);
+  const r039 = diagnostics.find((d) => ruleIds([d])[0] === "R039");
+  assert.ok(r039);
+  const [action] = await pteActions(document);
+  assert.ok(action, "sem Code Action para R039");
+  const replacement = replacements(action)[0];
+  assert.notEqual(document.getText(r039.range), replacement);
+  assert.ok(await vscode.workspace.applyEdit(action.edit!));
+  assert.ok(document.getText().includes(replacement));
+  assert.ok(!ruleIds(await analyzed(document)).includes("R039"));
+});
+
+it("regras sem fix safe não oferecem Code Action", async () => {
+  const rules = ["R001", "R004", "R005", "R006", "R012", "R014", "R017", "R018", "R021", "R029",
+    "R031", "R037", "R040", "R041", "R042", "R045", "R046", "R048", "R050"];
+  const offering: string[] = [];
+  for (const rule of rules) {
+    const document = await fixture("positive", rule);
+    await analyzed(document);
+    if ((await pteActions(document)).length > 0) offering.push(rule);
+  }
+  assert.deepEqual(offering, []);
+});
+
+it("suggestion sem fix não gera Code Action", async () => {
+  for (const rule of ["R001", "R005", "R006"]) {
+    const document = await fixture("positive", rule);
+    const diagnostic = (await analyzed(document)).find((d) => ruleIds([d])[0] === rule);
+    assert.ok(diagnostic, rule);
+    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
+      "vscode.executeHoverProvider", document.uri, diagnostic.range.start
+    );
+    const markdown = hovers.flatMap((h) => h.contents).map((c) => (typeof c === "string" ? c : c.value)).join("\n");
+    assert.match(markdown, /Sugestão:/, rule);
+    assert.deepEqual(await pteActions(document), [], rule);
+  }
+});
+
+it("Code Action some quando o buffer mudou depois da análise", async () => {
+  const document = await scratch(await fixture("positive", "R038"));
+  await analyzed(document);
+  assert.equal((await pteActions(document)).length, 1);
+  const edit = new vscode.WorkspaceEdit();
+  edit.insert(document.uri, new vscode.Position(0, 0), "X");
+  assert.ok(await vscode.workspace.applyEdit(edit));
+  assert.deepEqual(await pteActions(document), []);
+});
+
 export async function run(): Promise<void> {
   const config = vscode.workspace.getConfiguration("pte100");
   await config.update("level", "pte-ia", vscode.ConfigurationTarget.Global);

@@ -93,6 +93,11 @@ export function toPosition(lines: string[], point: Point): Position {
   return {line, character: character + Math.max(0, remaining)};
 }
 
+// Só fix.safety "safe" com replacement vira Code Action; "review" e suggestion sem fix, não.
+export function safeReplacement(item: CliDiagnostic): string | undefined {
+  return item.fix?.safety === "safe" && typeof item.fix.replacement === "string" ? item.fix.replacement : undefined;
+}
+
 export function hoverMarkdown(rule: RuleInfo | undefined, ruleId: string, suggestion?: string): string {
   const parts: string[] = [];
   if (rule) {

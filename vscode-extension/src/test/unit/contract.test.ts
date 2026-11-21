@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
-import {ToolError, cliArgs, hoverMarkdown, parseResult, splitLines, toPosition} from "../../contract";
+import {CliDiagnostic, ToolError, cliArgs, hoverMarkdown, parseResult, safeReplacement, splitLines, toPosition} from "../../contract";
 
 const point = (line: number, column: number) => ({line, column, offset: 0});
 
@@ -46,4 +46,14 @@ test("hover mostra título, descrição, exemplo correto e sugestão", () => {
   assert.match(markdown, /Correto: 24 V/);
   assert.match(markdown, /Sugestão: `24\u00a0V`/);
   assert.equal(hoverMarkdown(undefined, "R999"), "**R999**");
+});
+
+test("só fix safe com replacement vira Code Action", () => {
+  const base = {
+    rule: "R038", severity: "error", message: "m", file: "a.md",
+    range: {start: point(1, 1), end: point(1, 5)}, suggestion: "24\u00a0V"
+  } as CliDiagnostic;
+  assert.equal(safeReplacement({...base, fix: {safety: "safe", replacement: "24\u00a0V"}}), "24\u00a0V");
+  assert.equal(safeReplacement({...base, fix: {safety: "review", replacement: "24\u00a0V"}}), undefined);
+  assert.equal(safeReplacement(base), undefined);
 });
