@@ -3,7 +3,8 @@ import {existsSync} from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import {
-  CONFIG_FILES, CliDiagnostic, RuleInfo, ToolError, cliArgs, hoverMarkdown, parseResult, splitLines, toPosition
+  CONFIG_FILES, CliDiagnostic, RuleInfo, ToolError, cliArgs, hoverMarkdown, parseResult, safeReplacement, splitLines,
+  toPosition
 } from "./contract";
 
 const LANGUAGES = ["markdown", "plaintext"];
@@ -30,6 +31,7 @@ export function activate(context: vscode.ExtensionContext): Pte100Api {
   const output = vscode.window.createOutputChannel("PTE-100");
   const pending = new Map<string, Pending>();
   const suggestions = new WeakMap<vscode.Diagnostic, string>();
+  const fixes = new WeakMap<vscode.Diagnostic, {replacement: string; version: number}>();
   const rulesCache = new Map<string, Promise<Map<string, RuleInfo>>>();
   const shownErrors = new Set<string>();
 
@@ -65,7 +67,7 @@ export function activate(context: vscode.ExtensionContext): Pte100Api {
     pending.delete(key);
   }
 
-  function toDiagnostic(lines: string[], item: CliDiagnostic): vscode.Diagnostic {
+  function toDiagnostic(lines: string[], item: CliDiagnostic, version: number): vscode.Diagnostic {
     const start = toPosition(lines, item.range.start);
     const end = toPosition(lines, item.range.end);
     const diagnostic = new vscode.Diagnostic(
@@ -78,6 +80,8 @@ export function activate(context: vscode.ExtensionContext): Pte100Api {
       ? {value: item.rule, target: vscode.Uri.parse(item.documentation)}
       : item.rule;
     if (item.suggestion !== undefined) suggestions.set(diagnostic, item.suggestion);
+    const replacement = safeReplacement(item);
+    if (replacement !== undefined) fixes.set(diagnostic, {replacement, version});
     return diagnostic;
   }
 
@@ -123,13 +127,14 @@ export function activate(context: vscode.ExtensionContext): Pte100Api {
       locale: settings().get<string | null>("locale", null)
     });
     const text = document.getText();
+    const version = document.version;
 
     try {
       const outcome = await run(settings().get<string>("rubyPath", "ruby"), args, cwd, text, abort.signal);
       if (!outcome) return undefined;
       const result = parseResult(outcome.code, outcome.stdout, outcome.stderr);
       const lines = splitLines(text);
-      const diagnostics = result.diagnostics.map((item) => toDiagnostic(lines, item));
+      const diagnostics = result.diagnostics.map((item) => toDiagnostic(lines, item, version));
       collection.set(document.uri, diagnostics);
       return diagnostics;
     } catch (error) {
@@ -187,12 +192,39 @@ export function activate(context: vscode.ExtensionContext): Pte100Api {
     }
   };
 
+  const codeOf = (d: vscode.Diagnostic) => (typeof d.code === "object" ? d.code.value : d.code);
+
+  // Ação explícita, uma por diagnóstico; só vale para a versão do buffer que a CLI analisou.
+  const codeActions: vscode.CodeActionProvider = {
+    provideCodeActions(document, _range, context) {
+      // O VS Code entrega cópias dos diagnósticos; recupera o original da coleção.
+      const own = collection.get(document.uri) ?? [];
+      return context.diagnostics.flatMap((diagnostic) => {
+        const original = own.find((d) => d.source === diagnostic.source && d.message === diagnostic.message &&
+          d.range.isEqual(diagnostic.range) && codeOf(d) === codeOf(diagnostic));
+        const fix = original && fixes.get(original);
+        if (!fix || fix.version !== document.version) return [];
+        const action = new vscode.CodeAction(
+          `PTE-100: substituir por "${fix.replacement}"`, vscode.CodeActionKind.QuickFix
+        );
+        action.diagnostics = [diagnostic];
+        action.isPreferred = true;
+        action.edit = new vscode.WorkspaceEdit();
+        action.edit.replace(document.uri, diagnostic.range, fix.replacement);
+        return [action];
+      });
+    }
+  };
+
   const delay = () => Math.max(0, settings().get<number>("debounceMs", 300));
 
   context.subscriptions.push(
     collection,
     output,
     vscode.languages.registerHoverProvider(LANGUAGES, hover),
+    vscode.languages.registerCodeActionsProvider(LANGUAGES, codeActions, {
+      providedCodeActionKinds: [vscode.CodeActionKind.QuickFix]
+    }),
     vscode.workspace.onDidOpenTextDocument((document) => schedule(document, 0)),
     vscode.workspace.onDidSaveTextDocument((document) => schedule(document, 0)),
     vscode.workspace.onDidChangeTextDocument((event) => {

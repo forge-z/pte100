@@ -25,7 +25,8 @@ Esta seção registra ferramentas e manutenção em desenvolvimento. O snapshot 
 - formulários de bug, proposta de regra e feedback de piloto, template de PR, onboarding PT/EN e instruções em `AGENTS.md` e `MAINTAINERS.md` na [Fase 1](https://github.com/forge-z/pte100/pull/4);
 - teste de contrato da saída da CLI: JSON validado contra `schemas/diagnostic.schema.json` e SARIF validado contra o novo subconjunto `schemas/pte-lint-sarif.schema.json`, com as 42 fixtures, texto sem diagnóstico e correções `safe` de R038 e R039 (Etapa 1 de [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md));
 - extensão experimental do VS Code em `vscode-extension/`, sem publicação no Marketplace: envia o buffer de Markdown ou texto simples a `bin/pte-lint` ao salvar e após um atraso de digitação, cancela a análise anterior, converte colunas para UTF-16 e mostra regra, exemplo correto e sugestão no hover (Etapa 2 de [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md));
-- plano de execução da extensão VS Code e do servidor MCP em [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md); as duas integrações continuam não implementadas.
+- Code Actions explícitas na extensão do VS Code para diagnósticos com `fix.safety` igual a `safe` (R038 e R039), sem reescrita ao salvar (Etapa 3 de [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md));
+- plano de execução da extensão VS Code e do servidor MCP em [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md); o servidor MCP continua não implementado.
 
 ### Corrigido
 
