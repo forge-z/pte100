@@ -1,0 +1,37 @@
+{
+  "name": "pte100-vscode",
+  "displayName": "PTE-100",
+  "description": "Diagnósticos do PTE-Lint para Markdown e texto simples, executando a CLI local.",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "forge-z",
+  "license": "SEE LICENSE IN ../LICENSE",
+  "repository": {"type": "git", "url": "https://github.com/forge-z/pte100.git", "directory": "vscode-extension"},
+  "engines": {"vscode": "^1.90.0"},
+  "categories": ["Linters"],
+  "main": "./out/extension.js",
+  "activationEvents": ["onLanguage:markdown", "onLanguage:plaintext"],
+  "contributes": {
+    "configuration": {
+      "title": "PTE-100",
+      "properties": {
+        "pte100.rubyPath": {"type": "string", "default": "ruby", "description": "Executável Ruby usado para chamar a CLI."},
+        "pte100.cliPath": {"type": "string", "default": "bin/pte-lint", "description": "Caminho de bin/pte-lint, relativo à raiz do workspace ou absoluto."},
+        "pte100.debounceMs": {"type": "number", "default": 300, "minimum": 0, "description": "Atraso, em milissegundos, entre a última alteração e a análise."},
+        "pte100.level": {"type": ["string", "null"], "enum": [null, "pte-estrutura", "pte-claro", "pte-ia"], "default": null, "description": "Força --level. Vazio usa a configuração do workspace ou o padrão da CLI."},
+        "pte100.locale": {"type": ["string", "null"], "default": null, "description": "Força --locale. Vazio usa a configuração do workspace ou o padrão da CLI."}
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "test": "npm run compile && node --test \"out/test/unit/*.test.js\"",
+    "test:electron": "npm run compile && node out/test/runElectron.js"
+  },
+  "devDependencies": {
+    "@types/node": "~22.15.0",
+    "@types/vscode": "~1.90.0",
+    "@vscode/test-electron": "~2.5.2",
+    "typescript": "~5.9.3"
+  }
+}
