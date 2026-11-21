@@ -98,7 +98,7 @@ BUNDLE_GEMFILE=reviewer-webapp/Gemfile bundle exec rake verify
 | PTE-Lint | analisador e formato de diagnósticos | MVP offline (21 regras automáticas) |
 | PTE-100 Reviewer | revisão local de Markdown, texto e PDF textual | MVP offline |
 | VS Code Extension | feedback durante a escrita | experimental em [vscode-extension/](vscode-extension/README.md), sem publicação |
-| MCP Server | validação e consulta por agentes | planejado |
+| MCP Server | validação e consulta por agentes | experimental em [bin/pte-mcp](docs/plano-vscode-mcp.md#etapa-4--servidor-mcp), local, stdio e somente leitura |
 | API REST | validação remota e registro de termos | planejado |
 
 ## Princípios de manutenção

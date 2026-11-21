@@ -69,7 +69,7 @@ Read the [design principles](docs/design-principles.md) and [architecture](docs/
 
 ## Architecture
 
-PTE-100 Core defines the controlled language. The existing CLI and local reviewer share the Ruby PTE-Lint engine. An experimental, unpublished VS Code extension in [vscode-extension/](vscode-extension/README.md) runs the same CLI. PTE-200 Vocabulary, PTE-300 domain profiles, MCP Server and REST API remain planned work; see the [roadmap](ROADMAP.md). OCR and integrated generative AI are not part of the current MVP.
+PTE-100 Core defines the controlled language. The existing CLI and local reviewer share the Ruby PTE-Lint engine. An experimental, unpublished VS Code extension in [vscode-extension/](vscode-extension/README.md) runs the same CLI. An experimental local, read-only stdio MCP server in `bin/pte-mcp` exposes the same CLI, the rule catalog and the core vocabulary; see the [plan](docs/plano-vscode-mcp.md). PTE-200 Vocabulary, PTE-300 domain profiles and REST API remain planned work; see the [roadmap](ROADMAP.md). OCR and integrated generative AI are not part of the current MVP.
 
 ## Contributing
 
