@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge-z.github.io/pte100/schemas/pte-lint-sarif-1.json",
+  "title": "Subconjunto SARIF emitido pelo PTE-Lint",
+  "description": "Registra a saída --format sarif atual de bin/pte-lint. Não é o schema oficial SARIF 2.1.0: level copia severity e pode valer info; o intervalo não traz fim, sugestão nem correção; o driver não descreve regras.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "version", "runs"],
+  "properties": {
+    "$schema": {"const": "https://json.schemastore.org/sarif-2.1.0.json"},
+    "version": {"const": "2.1.0"},
+    "runs": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/run"}}
+  },
+  "$defs": {
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "results"],
+      "properties": {
+        "tool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["driver"],
+          "properties": {
+            "driver": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "version"],
+              "properties": {"name": {"const": "pte-lint"}, "version": {"type": "string"}}
+            }
+          }
+        },
+        "results": {"type": "array", "items": {"$ref": "#/$defs/result"}}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "level", "message", "locations"],
+      "properties": {
+        "ruleId": {"type": "string"},
+        "level": {"enum": ["error", "warning", "info"]},
+        "message": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {"text": {"type": "string"}}
+        },
+        "locations": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/location"}}
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["physicalLocation"],
+      "properties": {
+        "physicalLocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifactLocation", "region"],
+          "properties": {
+            "artifactLocation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["uri"],
+              "properties": {"uri": {"type": "string"}}
+            },
+            "region": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["startLine", "startColumn"],
+              "properties": {
+                "startLine": {"type": "integer", "minimum": 1},
+                "startColumn": {"type": "integer", "minimum": 1}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
