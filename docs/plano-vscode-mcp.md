@@ -124,6 +124,12 @@ Critério de aceite:
 
 ## Etapa 4 — Servidor MCP
 
+Estado: implementada em [bin/pte-mcp](../bin/pte-mcp) e [lib/pte_mcp.rb](../lib/pte_mcp.rb), só com a biblioteca padrão do Ruby. O servidor lê JSON-RPC 2.0, uma mensagem por linha, em stdin e responde em stdout; nada vai para stderr nem para disco. O limite de texto é 1 MiB (1 048 576 bytes UTF-8); acima dele a ferramenta devolve erro sem truncar. [test/test_mcp_server.rb](../test/test_mcp_server.rb) cobre os critérios de aceite abaixo, inclusive a ausência de escrita no workspace. Configuração de um cliente MCP:
+
+```json
+{"mcpServers": {"pte100": {"command": "ruby", "args": ["/caminho/para/pte100/bin/pte-mcp"]}}}
+```
+
 Processo local, transporte `stdio`, sem rede e sem escrita. Três ferramentas, os mesmos nomes já listados em [tooling-plan.md](tooling-plan.md). `pte_check_file`, `pte_list_rules` e `pte_validate_metadata` continuam só naquele plano.
 
 | Ferramenta | Entrada | Saída |
