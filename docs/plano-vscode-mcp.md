@@ -58,6 +58,8 @@ Critério de aceite:
 
 Cliente TypeScript no monorepositório. Não há servidor LSP nesta etapa. A extensão não reimplementa regras: envia o buffer à CLI e traduz o JSON.
 
+Estado: implementada em [vscode-extension/](../vscode-extension/README.md), sem publicação no Marketplace. Os testes de unidade usam `node --test`; a suíte `@vscode/test-electron` abre as 42 fixtures, um buffer não salvo com emoji, acento e U+00A0, o hover, o cancelamento e a falha da CLI. O hover lê `rules/rules.yaml` com o Ruby já exigido pela CLI, sem biblioteca YAML no pacote da extensão.
+
 Disparo:
 
 - ao salvar, análise imediata do buffer;
