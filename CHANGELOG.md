@@ -22,6 +22,7 @@ Esta seção registra ferramentas e manutenção em desenvolvimento. O snapshot 
 - verificações de consistência entre vocabulário, regras, catálogo e exemplos, incluindo sintaxe dos schemas JSON, sem validar instâncias contra esses schemas;
 - [Reviewer local](reviewer-webapp/README.md) para Markdown, texto e PDF com camada de texto, compartilhando o motor Ruby;
 - formulários de bug, proposta de regra e feedback de piloto, template de PR, onboarding PT/EN e instruções em `AGENTS.md` e `MAINTAINERS.md` na [Fase 1](https://github.com/forge-z/pte100/pull/4);
+- teste de contrato da saída da CLI: JSON validado contra `schemas/diagnostic.schema.json` e SARIF validado contra o novo subconjunto `schemas/pte-lint-sarif.schema.json`, com as 42 fixtures, texto sem diagnóstico e correções `safe` de R038 e R039 (Etapa 1 de [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md));
 - plano de execução da extensão VS Code e do servidor MCP em [docs/plano-vscode-mcp.md](docs/plano-vscode-mcp.md); as duas integrações continuam não implementadas.
 
 ### Corrigido

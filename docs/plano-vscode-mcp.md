@@ -12,7 +12,7 @@ A primeira extensão chama a CLI que já existe. O Language Server Protocol perm
 
 A saída JSON segue [schemas/diagnostic.schema.json](../schemas/diagnostic.schema.json), versão `1.0`. Cada diagnóstico traz, entre outros campos obrigatórios, `rule`, `severity`, `message`, `file`, `range` e `fingerprint`. `range.start` e `range.end` têm `line` e `column` a partir de 1 e `offset` em bytes UTF-8 a partir de 0. O fim do intervalo é exclusivo. `suggestion` e `fix` são opcionais.
 
-`--format sarif` emite um documento com `version` `2.1.0`, uma execução e, por diagnóstico, `ruleId`, `level`, `message.text`, `startLine` e `startColumn`. Não há schema SARIF em `schemas/`. O emissor copia `severity` para `level`, não envia o fim do intervalo, não envia `suggestion` nem `fix` e não descreve as regras no driver. `info` não é valor de `level` no SARIF 2.1.0. A extensão usa JSON.
+`--format sarif` emite um documento com `version` `2.1.0`, uma execução e, por diagnóstico, `ruleId`, `level`, `message.text`, `startLine` e `startColumn`. O subconjunto emitido está em [schemas/pte-lint-sarif.schema.json](../schemas/pte-lint-sarif.schema.json). O emissor copia `severity` para `level`, não envia o fim do intervalo, não envia `suggestion` nem `fix` e não descreve as regras no driver. `info` não é valor de `level` no SARIF 2.1.0. A extensão usa JSON.
 
 O motor executa as 21 regras de `PteLint::AUTOMATIC_RULES`. As outras 29 permanecem `assisted` em `rules/rules.yaml` e não têm método `check_` no motor. O catálogo marca `autofix` como `none`, `suggested` ou `safe`. O motor só preenche `fix` quando há `suggestion` e `fix_safety`. Hoje isso ocorre apenas em R038 e R039, com `fix.safety` igual a `safe` e `fix.replacement` igual à sugestão.
 
@@ -36,7 +36,7 @@ As 42 fixtures em `corpus/fixtures/positive/` e `corpus/fixtures/negative/` vêm
 
 Objetivo: a extensão e o servidor MCP dependem do JSON que a CLI já emite. Uma mudança do motor que altere esse formato quebra o teste antes de quebrar o editor.
 
-O schema de diagnóstico já existe. Falta validar instâncias. `tools/validate_repo.rb` só confere que os arquivos em `schemas/` são JSON sintaticamente válido. `test/test_pte_lint.rb` confere `schema_version`, o nome da ferramenta e um ID de regra. O `Gemfile` do revisor não traz biblioteca de JSON Schema.
+Estado: implementada. [test/test_output_contract.rb](../test/test_output_contract.rb) executa `ruby bin/pte-lint check` com `--level pte-ia` e `--locale pt-BR` e valida as saídas JSON e SARIF. O validador em [test/support/json_schema_subset.rb](../test/support/json_schema_subset.rb) usa só a biblioteca padrão. Ele cobre as palavras-chave usadas pelos dois schemas e recusa as demais. O `Gemfile` do revisor continua sem biblioteca de JSON Schema.
 
 Trabalho desta etapa:
 
