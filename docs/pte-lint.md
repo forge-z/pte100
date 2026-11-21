@@ -117,6 +117,8 @@ Códigos de saída:
 
 ## CLI proposta
 
+Na CLI implementada, a entrada padrão e as saídas usam UTF-8 mesmo sem `LANG` ou com `LC_ALL=C`. Acentos e emoji não dependem da localidade do processo. Bytes UTF-8 inválidos na entrada padrão resultam em erro de leitura (código 3).
+
 ```text
 pte-lint check [PATH...] [--format text|json|sarif] [--stdin-filename FILE]
 pte-lint explain RULE
