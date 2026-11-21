@@ -39,6 +39,45 @@ class PteLintCliTest < Minitest::Test
     assert_match(/invalid byte sequence in UTF-8/, stderr)
   end
 
+  def test_accented_arguments_are_independent_of_locale
+    text = "É necessário que o operador faça a verificação."
+    Tempfile.create(["ação-ã-é", ".md"]) do |document|
+      document.write(text)
+      document.flush
+      Tempfile.create(["configuração-ã-é", ".yaml"]) do |config|
+        config.write("level: pte-claro\nlocale: pt-BR\n")
+        config.flush
+        %w[json text sarif].each do |format|
+          base = [RbConfig.ruby, CLI, "check", "--format", format, "--config", config.path, "--level", "pte-claro", "--locale", "pt-BR"]
+          [[base + ["--stdin-filename", "ação-ã-é.md"], "ação-ã-é.md"], [base + [document.path], document.path]].each do |args, filename|
+            expected = Open3.capture3({"LC_ALL" => "C.UTF-8"}, *args, stdin_data: text)
+            assert_equal 1, expected.last.exitstatus, expected[1]
+            assert_includes JSON.parse(expected[0]).fetch("diagnostics").map { |d| d["file"] }, filename if format == "json"
+            [{"LC_ALL" => "C"}, {"LC_ALL" => "POSIX"}, {"LC_ALL" => nil, "LC_CTYPE" => nil}].each do |env|
+              stdout, stderr, status = Open3.capture3(env.merge("LANG" => ""), *args, stdin_data: text)
+              assert_equal expected.last.exitstatus, status.exitstatus, stderr
+              assert_equal expected.first, stdout
+              assert_empty stderr
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def test_accented_level_and_locale_arguments_are_independent_of_locale
+    %w[level locale].each do |option|
+      args = [RbConfig.ruby, CLI, "check", "--format", "json", "--#{option}", "inválido", "--stdin-filename", "ação.md"]
+      expected = Open3.capture3({"LC_ALL" => "C.UTF-8"}, *args, stdin_data: "Verifique.")
+      assert_equal(option == "level" ? 2 : 0, expected.last.exitstatus)
+      %w[C POSIX].each do |locale|
+        stdout, stderr, status = Open3.capture3({"LC_ALL" => locale, "LANG" => ""}, *args, stdin_data: "Verifique.")
+        assert_equal expected.last.exitstatus, status.exitstatus
+        assert_equal expected[0, 2], [stdout, stderr]
+      end
+    end
+  end
+
   def test_fail_on_never_never_fails_the_command
     Tempfile.create(["pte-lint", ".yaml"]) do |config|
       config.write("fail_on: never\n")
