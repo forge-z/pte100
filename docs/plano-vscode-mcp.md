@@ -107,6 +107,8 @@ Critério de aceite:
 
 ## Etapa 3 — Code Actions
 
+Estado: implementada em [vscode-extension/](../vscode-extension/README.md). A suíte Electron verifica as fixtures de R038 e R039, as 19 regras sem `fix`, R001, R005 e R006 com `suggestion` e sem ação, e a ausência de ação depois de uma edição posterior à análise.
+
 Code Action só quando o diagnóstico traz `fix.safety` igual a `safe` e `fix.replacement`. No catálogo e no motor atuais, isso é R038 e R039.
 
 A ação substitui o intervalo `range` por `fix.replacement`. Em R038, a substituição é o valor, U+00A0 e o símbolo. Em R039, é o trecho com o símbolo padronizado do registro. A ação é explícita: a pessoa a escolhe no editor. A extensão não reescreve em lote ao salvar e não chama `fix`, comando ausente no MVP.
